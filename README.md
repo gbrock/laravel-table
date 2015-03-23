@@ -1,4 +1,8 @@
 # Laravel Tables
+
+[![Build Status](https://img.shields.io/travis/gbrock/laravel-table.svg)](https://travis-ci.org/gbrock/laravel-table)
+[![Latest Tag](https://img.shields.io/github/tag/gbrock/laravel-table.svg)](https://github.com/gbrock/laravel-table/releases)
+
 Adds database-level sorting to Laravel models.  **This project is under ongoing development and should not be considered stable.**
 
 
