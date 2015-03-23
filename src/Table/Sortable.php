@@ -1,6 +1,6 @@
 <?php namespace Gbrock\Table;
 
-trait TableSortable {
+trait Sortable {
     public function scopeSorted($query, $field, $dir = 'asc')
     {
         // If we tried to sort a Model which can't be sorted, fail loudly.
