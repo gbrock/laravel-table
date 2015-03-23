@@ -1,7 +1,5 @@
 <?php namespace Gbrock\Table;
 
-use Request;
-
 trait TableSortable {
     public function scopeSorted($query, $field, $dir = 'asc')
     {
@@ -14,11 +12,7 @@ trait TableSortable {
         // If the field requested isn't known to be sortable by our model, fail silently.
         if(!in_array($field, $this->sortable))
         {
-            return $query->paginate(
-                min(
-                    max(10, (int) Request::input('per') // between 10 rows minimum...
-                ), 500) // ...and 500 rows maximum
-            );
+            return $query;
         }
 
         // If the direction requested isn't correct, assume ascending
@@ -29,13 +23,8 @@ trait TableSortable {
 
         // At this point, all should be well, continue.
         return $query
-            ->orderByRaw('ISNULL(' . $field . ')')
-            ->orderBy($field, $dir)
-            ->paginate(
-                min(
-                    max(10, (int) Request::input('per') // between 10 rows minimum...
-                ), 500) // ...and 500 rows maximum
-            );
+            ->orderByRaw('ISNULL(' . $field . ')') // MySQL hack to always sort NULLs last
+            ->orderBy($field, $dir);
     }
 }
 
