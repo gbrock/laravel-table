@@ -1,13 +1,17 @@
 <?php namespace Gbrock\Table;
 
-use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Input;
 
 class Table {
 
     protected $models;
     protected $columns;
 
-    public function __construct($models = false, $columns = false)
+    /**
+     * @param array $models
+     * @param array $columns
+     */
+    public function __construct($models = [], $columns = [])
     {
         if($models)
         {
@@ -38,19 +42,53 @@ class Table {
     }
 
     /**
-     * Add a column
+     * Add columns based on field names
      * @param $columns
      */
     protected function addColumns($columns)
     {
-        $this->columns =+ $columns;
+        $model = $this->models->first();
+
+        foreach($columns as $key => $field)
+        {
+            // For each of our table's basic keys, add a column
+            if(is_string($field))
+            {
+                // This is a basic string column
+                $new_column = Column::create($field);
+            }
+            else
+            {
+                if(!is_string($key))
+                {
+                    // This column has extra associations, and must be keyed
+                    throw new ColumnKeyNotProvidedException;
+                }
+
+                // Set the variables back up properly
+                $field_parameters = $field;
+                $field = $key;
+
+                // Create the complex column
+                $new_column = Column::create($field, $field_parameters);
+            }
+
+            if(in_array($field, $model->getSortable()))
+            {
+                // The model dictates that this column should be sortable
+                $new_column->setSortable(true);
+            }
+
+            $this->columns[] = $new_column;
+        }
     }
 
     /**
-     * Get columns based on a collection of models
+     * Get fields based on a collection of models
+     * @param $models
      * @return array
      */
-    protected function getColumnsFromModels($models)
+    protected function getFieldsFromModels($models)
     {
         if(!$models->first())
         {
@@ -67,6 +105,7 @@ class Table {
      */
     public function render()
     {
+        $this->appendPaginationLinks();
         return view('gbrock.tables::table', $this->getViewData())->render();
     }
 
@@ -106,7 +145,8 @@ class Table {
      */
     public function setColumns($columns)
     {
-        $this->columns = $columns;
+        $this->clearColumns();
+        $this->addColumns($columns);
     }
 
     /**
@@ -116,6 +156,29 @@ class Table {
     public function setModels($models)
     {
         $this->models = $models;
+    }
+
+    /**
+     * Remove all currently-set columns.
+     */
+    private function clearColumns()
+    {
+        $this->columns = [];
+    }
+
+    /**
+     * If rows were paginated, add our variables to the pagination query string
+     */
+    private function appendPaginationLinks()
+    {
+        if(class_basename($this->models) == 'LengthAwarePaginator')
+        {
+            // This set of models was paginated.  Make it append our current view variables.
+            $this->models->appends(Input::only('sort', 'direction'));
+        }
+        else
+        {
+        }
     }
 
 }

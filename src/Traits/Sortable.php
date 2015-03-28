@@ -1,11 +1,19 @@
 <?php namespace Gbrock\Table\Traits;
 
+use Illuminate\Support\Facades\Request;
+
 trait Sortable {
-    public function scopeSorted($query, $field = false, $dir = 'asc')
+
+    public function scopeSorted($query, $field = false, $direction = false)
     {
         if($field === false)
         {
-            $field = $this->getDefaultField();
+            $field = $this->getSortingField();
+        }
+
+        if($direction === false)
+        {
+            $direction = $this->getSortingDirection();
         }
 
         // If we tried to sort a Model which can't be sorted, fail loudly.
@@ -21,15 +29,41 @@ trait Sortable {
         }
 
         // If the direction requested isn't correct, assume ascending
-        if($dir !== 'asc' && $dir !== 'desc')
+        if($direction !== 'asc' && $direction !== 'desc')
         {
-            $dir = 'asc';
+            $direction = 'asc';
         }
 
         // At this point, all should be well, continue.
         return $query
             ->orderByRaw('ISNULL(' . $field . ')') // MySQL hack to always sort NULLs last
-            ->orderBy($field, $dir);
+            ->orderBy($field, $direction);
+    }
+
+    public function getSortable()
+    {
+        if(isset($this->sortable))
+        {
+            return $this->sortable;
+        }
+    }
+
+    /**
+     * Returns the user-requested sorting field or the default for this model.
+     * If none is set, returns the primary key.
+     *
+     * @return string
+     */
+    protected function getSortingField()
+    {
+        if(Request::input('sort'))
+        {
+            // User is requesting a specific column
+            return Request::input('sort');
+        }
+
+        // Otherwise return the primary key
+        return $this->getKeyName();
     }
 
     /**
@@ -38,9 +72,16 @@ trait Sortable {
      *
      * @return string
      */
-    protected function getDefaultField()
+    protected function getSortingDirection()
     {
-        return $this->getKeyName();
+        if(Request::input('direction'))
+        {
+            // User is requesting a specific column
+            return Request::input('direction');
+        }
+
+        // Otherwise return the primary key
+        return 'asc';
     }
 }
 

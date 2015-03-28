@@ -3,7 +3,22 @@
 	<thead>
 		<tr>
         @foreach($columns as $c)
-            <th>{{ $c }}</th>
+            <th>
+                @if($c->isSortable())
+                    <a href="{{ $c->getSortURL() }}">
+                        {{ $c->getLabel() }}
+                        @if($c->isSorted())
+                            @if($c->getDirection() == 'asc')
+                                <span class="fa fa-sort-asc"></span>
+                            @elseif($c->getDirection() == 'desc')
+                                <span class="fa fa-sort-desc"></span>
+                            @endif
+                        @endif
+                    </a>
+                @else
+                    {{ $c->getLabel() }}
+                @endif
+            </th>
         @endforeach
 
 		</tr>
@@ -15,7 +30,7 @@
 
         <tr>
             @foreach($columns as $c)
-                <td>{{ $r->{$c} }}</td>
+                <td>{!! $r->{'rendered_' . $c->getField()} or $r->{$c->getField()} !!}</td>
             @endforeach
 
         </tr>
@@ -24,3 +39,8 @@
         @endif
 	</tbody>
 </table>
+
+@if(class_basename(get_class($rows)) == 'LengthAwarePaginator')
+    {{-- Collection is paginated, so render that --}}
+    {!! $rows->render() !!}
+@endif
