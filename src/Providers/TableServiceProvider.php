@@ -37,6 +37,11 @@ class TableServiceProvider extends ServiceProvider {
             $root . 'config/tables.php' => config_path('gbrock-tables.php'),
         ]);
 
+        // Merge user config, passing in our defaults
+        $this->mergeConfigFrom(
+            $root . 'config/tables.php', 'gbrock-tables'
+        );
+
         // Publish assets
 //        $this->publishes([
 //            $root . 'build/assets' => public_path('vendor/gbrock/tables'),

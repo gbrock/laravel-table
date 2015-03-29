@@ -20,7 +20,7 @@ class Table {
             if(!$columns)
             {
                 // Columns were not passed; generate them
-                $columns = $this->getColumnsFromModels($models);
+                $columns = $this->getFieldsFromModels($models);
             }
 
             $this->setColumns($columns);
@@ -44,6 +44,7 @@ class Table {
     /**
      * Add columns based on field names
      * @param $columns
+     * @throws ColumnKeyNotProvidedException
      */
     protected function addColumns($columns)
     {
@@ -71,13 +72,10 @@ class Table {
 
                 // Create the complex column
                 $new_column = Column::create($field, $field_parameters);
+
             }
 
-            if(in_array($field, $model->getSortable()))
-            {
-                // The model dictates that this column should be sortable
-                $new_column->setSortable(true);
-            }
+            $new_column->setOptionsFromModel($model);
 
             $this->columns[] = $new_column;
         }
@@ -96,7 +94,11 @@ class Table {
             return [];
         }
 
-        return array_keys($models->first()->toArray());
+        $fields = array_keys($models->first()->toArray());
+        $timestamp_fields = ['created_at', 'updated_at', 'deleted_at'];
+
+        // only those non-timestamp fields
+        return array_diff($fields, $timestamp_fields);
     }
 
     /**

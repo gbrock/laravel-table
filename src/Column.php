@@ -4,6 +4,9 @@ use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Input;
 
 class Column {
+    /** @var Model The base model from which we can gather certain options */
+    protected $model;
+
     /** @var string Applicable database field used in sorting */
     protected $field;
 
@@ -59,12 +62,34 @@ class Column {
     }
 
     /**
+     * Sets some common-sense options based on the underlying data model.
+     *
+     * @param Model $model
+     */
+    public function setOptionsFromModel($model)
+    {
+        if(in_array($this->getField(), $model->getSortable()))
+        {
+            // The model dictates that this column should be sortable
+            $this->setSortable(true);
+        }
+
+        $this->model = $model;
+    }
+
+    /**
      * Checks if this column is currently being sorted.
      */
     public function isSorted()
     {
         if(Request::input('sort') == $this->getField())
         {
+            return true;
+        }
+
+        if(!Request::input('sort') && $this->model && $this->model->getSortingField() == $this->getField())
+        {
+            // No sorting was requested, but this is the default field.
             return true;
         }
 

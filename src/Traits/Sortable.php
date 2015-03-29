@@ -31,7 +31,7 @@ trait Sortable {
         // If the direction requested isn't correct, assume ascending
         if($direction !== 'asc' && $direction !== 'desc')
         {
-            $direction = 'asc';
+            $direction = config('gbrock-tables.default_direction');
         }
 
         // At this point, all should be well, continue.
@@ -54,12 +54,12 @@ trait Sortable {
      *
      * @return string
      */
-    protected function getSortingField()
+    public function getSortingField()
     {
-        if(Request::input('sort'))
+        if(Request::input(config('gbrock-tables.key_field')))
         {
             // User is requesting a specific column
-            return Request::input('sort');
+            return Request::input(config('gbrock-tables.key_field'));
         }
 
         // Otherwise return the primary key
@@ -74,14 +74,14 @@ trait Sortable {
      */
     protected function getSortingDirection()
     {
-        if(Request::input('direction'))
+        if(Request::input(config('gbrock-tables.key_direction')))
         {
             // User is requesting a specific column
-            return Request::input('direction');
+            return Request::input(config('gbrock-tables.key_direction'));
         }
 
         // Otherwise return the primary key
-        return 'asc';
+        return config('gbrock-tables.default_direction');
     }
 }
 
