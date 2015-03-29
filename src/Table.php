@@ -6,6 +6,8 @@ class Table {
 
     protected $models;
     protected $columns;
+    protected $view = 'gbrock.tables::table';
+    protected $viewVars = [];
 
     /**
      * @param array $models
@@ -39,6 +41,26 @@ class Table {
         $table = new static($rows, $columns);
 
         return $table;
+    }
+
+    /**
+     * @return string
+     */
+    public function getView()
+    {
+        return $this->view;
+    }
+
+    /**
+     * @param string $view
+     */
+    public function setView($view, $vars = true)
+    {
+        $this->view = $view;
+        if(is_array($vars) || !$vars)
+        {
+            $this->viewVars = $vars;
+        }
     }
 
     /**
@@ -94,11 +116,21 @@ class Table {
             return [];
         }
 
-        $fields = array_keys($models->first()->toArray());
-        $timestamp_fields = ['created_at', 'updated_at', 'deleted_at'];
+        $model = $models->first();
 
-        // only those non-timestamp fields
-        return array_diff($fields, $timestamp_fields);
+        // These are the Laravel basic timestamp fields which we don't want to display, by default
+        $timestamp_fields = ['created_at', 'updated_at', 'deleted_at'];
+        // Grab the basic fields from the first model
+        $fields = array_keys($model->toArray());
+        // Remove the timestamp fields
+        $fields = array_diff($fields, $timestamp_fields);
+        if($model->isSortable)
+        {
+            // Add the fields from the model's sortable array
+            $fields = array_unique(array_merge($fields, $model->getSortable()));
+        }
+
+        return $fields;
     }
 
     /**
@@ -108,19 +140,19 @@ class Table {
     public function render()
     {
         $this->appendPaginationLinks();
-        return view('gbrock.tables::table', $this->getViewData())->render();
+        return view($this->view, $this->getData())->render();
     }
 
     /**
      * Generate the data needed to render the view.
      * @return array
      */
-    protected function getViewData()
+    public function getData()
     {
-        return [
+        return array_merge($this->viewVars, [
             'rows' => $this->getRows(),
             'columns' => $this->getColumns(),
-        ];
+        ]);
     }
 
     /**
@@ -176,7 +208,7 @@ class Table {
         if(class_basename($this->models) == 'LengthAwarePaginator')
         {
             // This set of models was paginated.  Make it append our current view variables.
-            $this->models->appends(Input::only('sort', 'direction'));
+            $this->models->appends(Input::only(config('gbrock-tables.key_field'), config('gbrock-tables.key_direction')));
         }
         else
         {

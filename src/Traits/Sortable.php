@@ -28,7 +28,7 @@ trait Sortable {
             return $query;
         }
 
-        // If the direction requested isn't correct, assume ascending
+        // If the direction requested isn't correct, grab from config
         if($direction !== 'asc' && $direction !== 'desc')
         {
             $direction = config('gbrock-tables.default_direction');
@@ -82,6 +82,11 @@ trait Sortable {
 
         // Otherwise return the primary key
         return config('gbrock-tables.default_direction');
+    }
+
+    public function getIsSortableAttribute()
+    {
+        return true;
     }
 }
 

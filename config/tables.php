@@ -2,7 +2,6 @@
 
 return [
     'key_field' => 'sort',
-    'key_direction' => 'direction',
-    'default_direction' => 'asc',
-
+    'key_direction' => 'dir',
+    'default_direction' => 'desc',
 ];

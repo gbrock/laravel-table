@@ -68,7 +68,7 @@ class Column {
      */
     public function setOptionsFromModel($model)
     {
-        if(in_array($this->getField(), $model->getSortable()))
+        if($model->is_sortable && in_array($this->getField(), $model->getSortable()))
         {
             // The model dictates that this column should be sortable
             $this->setSortable(true);
@@ -82,12 +82,12 @@ class Column {
      */
     public function isSorted()
     {
-        if(Request::input('sort') == $this->getField())
+        if(Request::input(config('gbrock-tables.key_field')) == $this->getField())
         {
             return true;
         }
 
-        if(!Request::input('sort') && $this->model && $this->model->getSortingField() == $this->getField())
+        if(!Request::input(config('gbrock-tables.key_field')) && $this->model && $this->model->getSortingField() == $this->getField())
         {
             // No sorting was requested, but this is the default field.
             return true;
@@ -115,8 +115,8 @@ class Column {
 
         // Generate and return a URL which may be used to sort this column
         return $this->generateUrl(array_filter([
-            'sort' => $this->getField(),
-            'direction' => $direction,
+            config('gbrock-tables.key_field') => $this->getField(),
+            config('gbrock-tables.key_direction') => $direction,
         ]));
     }
 
@@ -129,12 +129,12 @@ class Column {
        if($this->isSorted())
        {
            // If the column is currently being sorted, grab the direction from the query string
-           $this->direction = Request::input('direction');
+           $this->direction = Request::input(config('gbrock-tables.key_direction'));
        }
 
         if(!$this->direction)
         {
-            $this->direction = 'asc';
+            $this->direction = config('gbrock-tables.default_direction');
         }
 
         return $this->direction;
@@ -187,8 +187,8 @@ class Column {
     protected function getCurrentInput()
     {
         return Input::only([
-            'sort' => Request::input('sort'),
-            'direction' => Request::input('direction'),
+            config('gbrock-tables.key_field') => Request::input(config('gbrock-tables.key_field')),
+            config('gbrock-tables.key_direction') => Request::input(config('gbrock-tables.key_direction')),
         ]);
     }
 
