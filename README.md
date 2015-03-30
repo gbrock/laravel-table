@@ -4,8 +4,8 @@
 <!--[![Build Status](https://img.shields.io/travis/gbrock/laravel-table.svg)](https://travis-ci.org/gbrock/laravel-table)-->
 
 This package contains flexible ways of rendering Eloquent collections as dynamic HTML tables.  This includes
-techniques for sortable columns, automatic pagination, ~~user-definable amount of rows shown per page, batch action
-handling, and extensible filtering~~ (coming soon).
+techniques for sortable columns, customizable cell data, automatic pagination, ~~user-definable rows-per-page, batch 
+action handling, and extensible filtering~~ (coming soon).
 
 
 ## Installation
@@ -76,8 +76,8 @@ class User extends Model {
     protected $sortable = ['username', 'email', 'created_at'];
 ```
 
-This adds the `sortable` scope to your model, which you should use when retrieving rows.  Altering our first example,
-the database call / Table creation:
+This adds the `sortable` scope to your model, which you should use when retrieving rows.  Altering our example,
+`$rows = User::get()` becomes:
 
  ```php
  $rows = User::sorted()->get(); // Get all users from the database, but listen to the user Request and sort accordingly
