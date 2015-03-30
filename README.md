@@ -12,11 +12,19 @@ handling, and extensible filtering~~ (coming soon).
 
 Require the package in your `composer.json`:
 
-```
+```json
 "gbrock/laravel-table": "dev-master"
 ```
 
-(Optional) Publish the views and config:
+Add the service provider to `config/app.php` and, optionally, the Facade:
+
+```php
+'Gbrock\Table\Providers\TableServiceProvider',
+...
+'Table'      => 'Gbrock\Table\Facades\Table',
+```
+
+Publish the views and config:
 
 ```
 php artisan vendor:publish

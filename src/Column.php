@@ -2,6 +2,9 @@
 
 use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Input;
+use Illuminate\Routing\UrlGenerator;
+use Illuminate\Routing\Route;
+use Illuminate\Support\Facades\URL;
 
 class Column {
     /** @var Model The base model from which we can gather certain options */
@@ -126,11 +129,11 @@ class Column {
      */
     public function getDirection()
     {
-       if($this->isSorted())
-       {
-           // If the column is currently being sorted, grab the direction from the query string
-           $this->direction = Request::input(config('gbrock-tables.key_direction'));
-       }
+        if($this->isSorted())
+        {
+            // If the column is currently being sorted, grab the direction from the query string
+            $this->direction = Request::input(config('gbrock-tables.key_direction'));
+        }
 
         if(!$this->direction)
         {
@@ -177,11 +180,10 @@ class Column {
         // Generate our needed parameters
         $parameters = array_merge($this->getCurrentInput(), $parameters);
 
-        // Grab the current URL and keep any passed parameters
-        $action = $this->getCurrentAction();
-//        $parameters = array_merge($action['where'], $parameters);
+        // Grab the current URL
+        $route = URL::getRequest()->route();
 
-        return action($action['simple'], $parameters);
+        return url($route->getUri() . '?' . http_build_query($parameters));
     }
 
     protected function getCurrentInput()
@@ -206,14 +208,6 @@ class Column {
     public function setLabel($label)
     {
         $this->label = $label;
-    }
-
-    protected function getCurrentAction()
-    {
-        $action = Request::route()->getAction();
-        return array_merge($action, [
-            'simple' => substr($action['controller'], strlen($action['namespace'])+1),
-        ]);
     }
 
     private function setParameters($arguments)
