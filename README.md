@@ -97,15 +97,29 @@ If you paginate your Eloquent collection, it will automatically be rendered belo
  $rows = User::sorted()->paginate(); // Get all users from the database, sort, and paginate
 ```
 
-### Customizing the Columns
+## Customization
 
-For a bit more control, pass in a second argument to your database call / Table creation, **columns**:
+### Columns
+
+Pass in a second argument to your database call / Table creation, **columns**:
 
 ```php
  $table = Table::create($rows, ['username', 'created_at']); // Generate a Table based on these "rows"
 ```
 
-Since our view is accessing our model's attributes, we can add or modify any column key we'd like by using
+
+### Cells
+
+You can specify a closure to use when rendering cell data when adding the column:
+
+```php
+// We pass in the field, label, and a callback accepting the model data of the row it's currently rendering
+$table->addColumn('created_at', 'Added', function($model) {
+    return $model->created_at->diffForHumans();
+});
+```
+
+Also, since the table is accessing our model's attributes, we can add or modify any column key we'd like by using
 [accessors](http://laravel.com/docs/5.0/eloquent#accessors-and-mutators):
 
 ```php
@@ -116,11 +130,12 @@ Since our view is accessing our model's attributes, we can add or modify any col
     }
 ```
 
-### Customizing the View
+The default view favors the `rendered_foobar` attribute, if present, otherwise it uses the `foobar` attribute.
 
-The default view favors the `rendered_foo_bar` attribute, if present, else it uses the `foo_bar` attribute.  A copy of
-the view file is located in `/resources/vendor/gbrock/tables/` after you've run `php artisan vendor:publish`.  You
-can copy this file wherever you'd like and alter it, then tell your table to use the new view:
+### View
+
+A copy of the view file is located in `/resources/vendor/gbrock/tables/` after you've run `php artisan vendor:publish`.
+You can copy this file wherever you'd like and alter it, then tell your table to use the new view:
 
 ```php
 $table->setView('users.table');
