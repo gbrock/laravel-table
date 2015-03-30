@@ -30,7 +30,13 @@
 
         <tr>
             @foreach($columns as $c)
-                <td>{!! $r->{'rendered_' . $c->getField()} or $r->{$c->getField()} !!}</td>
+                @if($c->hasRenderer())
+                    {{-- Custom renderer applied to this column, call it now --}}
+                    <td>{!! $c->render($r) !!}</td>
+                @else
+                    {{-- Use the "rendered_foo" field, if available, else use the plain "foo" field --}}
+                    <td>{!! $r->{'rendered_' . $c->getField()} or $r->{$c->getField()} !!}</td>
+                @endif
             @endforeach
 
         </tr>

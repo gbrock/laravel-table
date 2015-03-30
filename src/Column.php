@@ -23,12 +23,11 @@ class Column {
     protected $sortable = false;
 
     /**
-     * @var mixed
-     * The rendering method used when generating cell data
-     * Can be either a string (the function or view file to be rendered) or a closure accepting the model $row:
-     * $column->setRender(function($row){ return '<strong>' . $row->id . '</strong>'; })
+     * @var closure
+     * A rendering closure used when generating cell data, accepts the model:
+     * $column->setRenderer(function($model){ return '<strong>' . $model->id . '</strong>'; })
      */
-    protected $render;
+    protected $renderer;
 
     public static function create()
     {
@@ -46,9 +45,20 @@ class Column {
                     $class->setField($args[0]);
                     $class->setLabel(ucwords(str_replace('_', ' ', $args[0])));
                 }
+                elseif(is_array($args[0]))
+                {
+                    // Just an array was sent; set the parameters.
+                    $class->setParameters($args);
+                }
                 break;
             case 2: // two arguments
-                if(is_string($args[0]) && is_array($args[1]))
+                if(is_string($args[0]) && is_string($args[1]))
+                {
+                    // Both are strings, this is a Field => Label affair.
+                    $class->setField($args[0]);
+                    $class->setLabel($args[1]);
+                }
+                elseif(is_string($args[0]) && is_array($args[1]))
                 {
                     // Normal complex initialization: field and quick parameters
                     $class->setField($args[0]);
@@ -57,6 +67,15 @@ class Column {
                     {
                         $class->setLabel(ucwords(str_replace('_', ' ', $args[0])));
                     }
+                }
+                break;
+            case 3: // three arguments
+                if(is_string($args[0]) && is_string($args[1]) && is_callable($args[2]))
+                {
+                    // Field, Label, and [rendering] Closure.  Standard View addition.
+                    $class->setField($args[0]);
+                    $class->setLabel($args[1]);
+                    $class->setRenderer($args[2]);
                 }
                 break;
         }
@@ -210,7 +229,7 @@ class Column {
         $this->label = $label;
     }
 
-    private function setParameters($arguments)
+    public function setParameters($arguments)
     {
         foreach($arguments as $k => $v)
         {
@@ -224,5 +243,29 @@ class Column {
     public function setDirection($direction)
     {
         $this->direction = $direction;
+    }
+
+    public function render($data)
+    {
+        if($this->hasRenderer())
+        {
+            $renderer = $this->renderer;
+            return $renderer($data);
+        }
+    }
+
+    public function hasRenderer()
+    {
+        return ($this->renderer != null);
+    }
+
+    public function setRenderer($function)
+    {
+        if(!is_callable($function))
+        {
+            throw new CallableFunctionNotProvidedException;
+        }
+
+        $this->renderer = $function;
     }
 }

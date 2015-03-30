@@ -1,6 +1,7 @@
 <?php namespace Gbrock\Table;
 
 use Illuminate\Support\Facades\Input;
+use Gbrock\Table\Column;
 
 class Table {
 
@@ -64,7 +65,22 @@ class Table {
     }
 
     /**
-     * Add columns based on field names
+     * Add one column to the table.
+     *
+     */
+    public function addColumn()
+    {
+        $model = $this->models->first();
+
+        $new_column = forward_static_call_array([new Column(), 'create'], func_get_args());
+
+        $new_column->setOptionsFromModel($model);
+
+        $this->columns[] = $new_column;
+    }
+
+    /**
+     * Add multiple columns at a time
      * @param $columns
      * @throws ColumnKeyNotProvidedException
      */
@@ -74,27 +90,15 @@ class Table {
 
         foreach($columns as $key => $field)
         {
-            // For each of our table's basic keys, add a column
-            if(is_string($field))
+            if(is_numeric($key))
             {
-                // This is a basic string column
+                // Simple non-keyed array passed.
                 $new_column = Column::create($field);
             }
             else
             {
-                if(!is_string($key))
-                {
-                    // This column has extra associations, and must be keyed
-                    throw new ColumnKeyNotProvidedException;
-                }
-
-                // Set the variables back up properly
-                $field_parameters = $field;
-                $field = $key;
-
-                // Create the complex column
-                $new_column = Column::create($field, $field_parameters);
-
+                // Key also matters, apparently
+                $new_column = Column::create($key, $field);
             }
 
             $new_column->setOptionsFromModel($model);
@@ -209,9 +213,6 @@ class Table {
         {
             // This set of models was paginated.  Make it append our current view variables.
             $this->models->appends(Input::only(config('gbrock-tables.key_field'), config('gbrock-tables.key_direction')));
-        }
-        else
-        {
         }
     }
 
