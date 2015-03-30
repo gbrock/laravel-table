@@ -58,7 +58,7 @@ Which would render something like this:
 
 ### Sorting
 
-To add links in your headers which sort the indicated column, add the `Sortable` trait to the your model.  Since no 
+To add links in your headers which sort the indicated column, add the `Sortable` trait to your model.  Since no 
 fields are allowed to be sorted by default (for security reasons), also add a `sortable` array containing allowed fields.
 
 ```php
