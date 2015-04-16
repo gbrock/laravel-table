@@ -20,9 +20,9 @@ class Table {
         {
             $this->setModels($models);
 
-            if(!$columns)
+            if(!$columns && $columns !== FALSE)
             {
-                // Columns were not passed; generate them
+                // Columns were not passed and were not prevented from auto-generation; generate them
                 $columns = $this->getFieldsFromModels($models);
             }
 
@@ -88,22 +88,25 @@ class Table {
     {
         $model = $this->models->first();
 
-        foreach($columns as $key => $field)
+        if($columns)
         {
-            if(is_numeric($key))
+            foreach($columns as $key => $field)
             {
-                // Simple non-keyed array passed.
-                $new_column = Column::create($field);
-            }
-            else
-            {
-                // Key also matters, apparently
-                $new_column = Column::create($key, $field);
-            }
+                if(is_numeric($key))
+                {
+                    // Simple non-keyed array passed.
+                    $new_column = Column::create($field);
+                }
+                else
+                {
+                    // Key also matters, apparently
+                    $new_column = Column::create($key, $field);
+                }
 
-            $new_column->setOptionsFromModel($model);
+                $new_column->setOptionsFromModel($model);
 
-            $this->columns[] = $new_column;
+                $this->columns[] = $new_column;
+            }
         }
     }
 
