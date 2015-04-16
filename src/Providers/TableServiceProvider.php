@@ -25,11 +25,11 @@ class TableServiceProvider extends ServiceProvider {
     {
         $root = __DIR__.'/../../';
         // Load views
-        $this->loadViewsFrom($root . 'resources/views', 'gbrock.tables');
+        $this->loadViewsFrom($root . 'resources/views', 'gbrock');
 
         // Publish views
         $this->publishes([
-            $root . 'resources/views' => base_path('resources/views/vendor/gbrock/tables'),
+            $root . 'resources/views' => base_path('resources/views/vendor/gbrock'),
         ]);
 
         // Publish configuration

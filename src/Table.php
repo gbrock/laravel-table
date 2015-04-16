@@ -7,7 +7,7 @@ class Table {
 
     protected $models;
     protected $columns;
-    protected $view = 'gbrock.tables::table';
+    protected $view = 'gbrock::table';
     protected $viewVars = [];
 
     /**
