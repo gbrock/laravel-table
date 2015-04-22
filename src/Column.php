@@ -90,6 +90,11 @@ class Column {
      */
     public function setOptionsFromModel($model)
     {
+        if(!$model)
+        {
+            return;
+        }
+
         if($model->is_sortable && in_array($this->getField(), $model->getSortable()))
         {
             // The model dictates that this column should be sortable
