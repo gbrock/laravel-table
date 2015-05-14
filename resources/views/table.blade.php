@@ -6,7 +6,7 @@
             <th>
                 @if($c->isSortable())
                     <a href="{{ $c->getSortURL() }}">
-                        {{ $c->getLabel() }}
+                        {!! $c->getLabel() !!}
                         @if($c->isSorted())
                             @if($c->getDirection() == 'asc')
                                 <span class="fa fa-sort-asc"></span>
