@@ -34,10 +34,10 @@ class Table {
      * Static way to generate a new instance of this class.
      *
      * @param $rows
-     * @param bool $columns
+     * @param mixed $columns
      * @return static
      */
-    public function create($rows, $columns = false)
+    public function create($rows, $columns = [])
     {
         $table = new static($rows, $columns);
 
