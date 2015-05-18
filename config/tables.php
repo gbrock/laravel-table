@@ -3,5 +3,5 @@
 return [
     'key_field' => 'sort',
     'key_direction' => 'dir',
-    'default_direction' => 'desc',
+    'default_direction' => 'asc',
 ];
