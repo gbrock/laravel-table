@@ -207,7 +207,7 @@ class Column {
         // Grab the current URL
         $route = URL::getRequest()->route();
 
-        return url($route->getUri() . '?' . http_build_query($parameters));
+        return url($route->getUri() . '/?' . http_build_query($parameters));
     }
 
     protected function getCurrentInput()
