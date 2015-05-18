@@ -76,7 +76,9 @@ class Table {
 
         $new_column->setOptionsFromModel($model);
 
-        $this->columns[] = $new_column;
+        $this->columns[] =& $new_column;
+
+        return $new_column;
     }
 
     /**
