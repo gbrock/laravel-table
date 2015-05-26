@@ -22,6 +22,9 @@ class Column {
     /** @var bool Whether this column can be sorted by the user */
     protected $sortable = false;
 
+    /** @var array The CSS classes applied to the column */
+    protected $classes = [];
+
     /**
      * @var closure
      * A rendering closure used when generating cell data, accepts the model:
@@ -272,5 +275,27 @@ class Column {
         }
 
         $this->renderer = $function;
+    }
+
+    public function addClass($class)
+    {
+        $this->classes[] = $class;
+        return $this;
+    }
+
+    /**
+     * @return array
+     */
+    public function getClasses()
+    {
+        return $this->classes;
+    }
+
+    /**
+     * @return array
+     */
+    public function getClassString()
+    {
+        return implode(' ', array_filter($this->classes));
     }
 }

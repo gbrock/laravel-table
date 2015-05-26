@@ -3,7 +3,7 @@
 	<thead>
 		<tr>
         @foreach($columns as $c)
-            <th>
+            <th {!! $c->getClasses() ? ' class="' . $c->getClassString() . '"' : '' !!}>
                 @if($c->isSortable())
                     <a href="{{ $c->getSortURL() }}">
                         {!! $c->getLabel() !!}
@@ -30,13 +30,15 @@
 
         <tr>
             @foreach($columns as $c)
-                @if($c->hasRenderer())
+                <td {!! $c->getClasses() ? ' class="' . $c->getClassString() . '"' : '' !!}>
+                 @if($c->hasRenderer())
                     {{-- Custom renderer applied to this column, call it now --}}
-                    <td>{!! $c->render($r) !!}</td>
-                @else
+                    {!! $c->render($r) !!}
+                    @else
                     {{-- Use the "rendered_foo" field, if available, else use the plain "foo" field --}}
-                    <td>{!! $r->{'rendered_' . $c->getField()} or $r->{$c->getField()} !!}</td>
-                @endif
+                        {!! $r->{'rendered_' . $c->getField()} or $r->{$c->getField()} !!}
+                    @endif
+                </td>
             @endforeach
 
         </tr>
