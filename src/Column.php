@@ -90,12 +90,13 @@ class Column {
      * Sets some common-sense options based on the underlying data model.
      *
      * @param Model $model
+     * @return $this
      */
     public function setOptionsFromModel($model)
     {
         if(!$model)
         {
-            return;
+            return $this;
         }
 
         if($model->is_sortable && in_array($this->getField(), $model->getSortable()))
@@ -105,6 +106,7 @@ class Column {
         }
 
         $this->model = $model;
+        return $this;
     }
 
     /**
@@ -180,10 +182,12 @@ class Column {
 
     /**
      * @param string $field
+     * @return $this
      */
     public function setField($field)
     {
         $this->field = $field;
+        return $this;
     }
 
     /**
@@ -196,10 +200,12 @@ class Column {
 
     /**
      * @param boolean $sortable
+     * @return $this
      */
     public function setSortable($sortable)
     {
         $this->sortable = (bool) $sortable;
+        return $this;
     }
 
     public function generateUrl($parameters = [])
@@ -231,10 +237,12 @@ class Column {
 
     /**
      * @param string $label
+     * @return $this
      */
     public function setLabel($label)
     {
         $this->label = $label;
+        return $this;
     }
 
     public function setParameters($arguments)
@@ -243,14 +251,17 @@ class Column {
         {
             $this->{'set' . ucfirst($k)}($v);
         }
+        return $this;
     }
 
     /**
      * @param string $direction
+     * @return $this
      */
     public function setDirection($direction)
     {
         $this->direction = $direction;
+        return $this;
     }
 
     public function render($data)
@@ -275,6 +286,7 @@ class Column {
         }
 
         $this->renderer = $function;
+        return $this;
     }
 
     public function addClass($class)
