@@ -23,7 +23,7 @@ trait Sortable {
         }
 
         // If the field requested isn't known to be sortable by our model, fail silently.
-        if(!in_array($field, $this->sortable) && !in_array($field, $this->joined_sortable))
+        if(!in_array($field, (array) $this->sortable) && !in_array($field, (array) $this->joined_sortable))
         {
             return $query;
         }
