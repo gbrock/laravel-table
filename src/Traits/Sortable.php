@@ -56,6 +56,8 @@ trait Sortable {
         {
             return array_merge((array) $this->sortable, (array) $this->joined_sortable);
         }
+
+        return [];
     }
 
     /**
