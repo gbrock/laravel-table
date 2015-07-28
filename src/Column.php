@@ -214,9 +214,9 @@ class Column {
         $parameters = array_merge($this->getCurrentInput(), $parameters);
 
         // Grab the current URL
-        $route = URL::getRequest()->route();
+        $path = URL::getRequest()->path();
 
-        return url($route->getUri() . '/?' . http_build_query($parameters));
+        return url($path . '/?' . http_build_query($parameters));
     }
 
     protected function getCurrentInput()
