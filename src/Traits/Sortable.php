@@ -23,7 +23,7 @@ trait Sortable {
         }
 
         // If the field requested isn't known to be sortable by our model, fail silently.
-        if(!in_array($field, (array) $this->sortable))
+        if(!in_array($field, (array) $this->sortable) && !isset($this->sortable[$field]))
         {
             return $query;
         }
@@ -34,15 +34,20 @@ trait Sortable {
             $direction = config('gbrock-tables.default_direction');
         }
 
-        if(in_array($field, $this->sortable))
+        if(isset($this->sortable[$field]))
+        {
+            // Set via key
+            $sortField = $this->sortable[$field];
+        }
+        elseif(in_array($field, $this->sortable))
         {
             // Does the passed field contain a period character?
             $sortField = strpos($field, '.') === FALSE ? $this->getTable() . '.' . $field : $field;
-
-            // At this point, all should be well, continue.
-            return $query
-                ->orderBy($sortField, $direction);
         }
+
+        // At this point, all should be well, continue.
+        return $query
+            ->orderBy($sortField, $direction);
     }
 
     public function getSortable()
