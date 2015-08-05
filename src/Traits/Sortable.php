@@ -23,7 +23,7 @@ trait Sortable {
         }
 
         // If the field requested isn't known to be sortable by our model, fail silently.
-        if(!in_array($field, (array) $this->sortable) && !in_array($field, (array) $this->joined_sortable))
+        if(!in_array($field, (array) $this->sortable))
         {
             return $query;
         }
@@ -34,27 +34,22 @@ trait Sortable {
             $direction = config('gbrock-tables.default_direction');
         }
 
-
         if(in_array($field, $this->sortable))
         {
+            // Does the passed field contain a period character?
+            $sortField = strpos($field, '.') === FALSE ? $this->getTable() . '.' . $field : $field;
+
             // At this point, all should be well, continue.
             return $query
-                ->orderByRaw('ISNULL(' . $this->getTable() . '.' . $field . ')') // MySQL hack to always sort NULLs last
-                ->orderBy($this->getTable() . '.' . $field, $direction);
-        }
-        elseif(in_array($field, $this->joined_sortable))
-        {
-            // At this point, all should be well, continue.
-            return $query
-                ->orderBy($field, $direction);
+                ->orderBy($sortField, $direction);
         }
     }
 
     public function getSortable()
     {
-        if($this->sortable || $this->joined_sortable)
+        if($this->sortable)
         {
-            return array_merge((array) $this->sortable, (array) $this->joined_sortable);
+            return (array) $this->sortable;
         }
 
         return [];
