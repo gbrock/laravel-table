@@ -35,13 +35,9 @@ trait Sortable {
         // is there a custom function for sorting this column?
         $isCallableFunction = method_exists($this, $sortFunctionName);
 
-        // If the field requested isn't known to be sortable by our model, fail silently.
-        if(
-            !$isValueOfSortable &&
-            !$isKeyOfSortable &&
-            !$isCallableFunction
-        )
+        if(!$isValueOfSortable && !$isKeyOfSortable && !$isCallableFunction)
         {
+            // If the field requested isn't known to be sortable by our model, fail silently.
             return $query;
         }
 
@@ -51,20 +47,19 @@ trait Sortable {
             $direction = config('gbrock-tables.default_direction');
         }
 
+        if($isCallableFunction)
+        {
+            // Call custom function and return immediately
+            return call_user_func([$this, $sortFunctionName], $query, $direction);
+        }
+
+        // By default assume the $field is a member of the $sortable array
+        $sortField = strpos($field, '.') === FALSE ? $this->getTable() . '.' . $field : $field;
+
         if($isKeyOfSortable)
         {
             // Set via key
             $sortField = $this->sortable[$field];
-        }
-        elseif($isValueOfSortable)
-        {
-            // Does the passed field contain a period character?
-            $sortField = strpos($field, '.') === FALSE ? $this->getTable() . '.' . $field : $field;
-        }
-        elseif($isCallableFunction)
-        {
-            // Call custom function and return immediately
-            return call_user_func([$this, $sortFunctionName], $query, $direction);
         }
 
         // At this point, all should be well, continue.
