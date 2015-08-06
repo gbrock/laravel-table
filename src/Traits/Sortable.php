@@ -16,14 +16,31 @@ trait Sortable {
             $direction = $this->getSortingDirection();
         }
 
-        // If we tried to sort a Model which can't be sorted, fail loudly.
-        if(!isset($this->sortable) || !is_array($this->sortable))
+        if(
+            !isset($this->sortable) || // are sortables present?
+            !is_array($this->sortable) // are the sortables an array?
+        )
         {
+            // If we tried to sort a Model which can't be sorted, fail loudly.
             throw new ModelMissingSortableArrayException;
         }
 
+        // The name of the custom function (which may or may not exist) which sorts this field
+        $sortFunctionName = 'sort' . studly_case($field);
+
+        // does $field appear as a VALUE in list of known sortables?
+        $isValueOfSortable = in_array($field, (array) $this->sortable);
+        // does $field appear as a KEY in list of known sortables?
+        $isKeyOfSortable = isset($this->sortable[$field]);
+        // is there a custom function for sorting this column?
+        $isCallableFunction = method_exists($this, $sortFunctionName);
+
         // If the field requested isn't known to be sortable by our model, fail silently.
-        if(!in_array($field, (array) $this->sortable) && !isset($this->sortable[$field]))
+        if(
+            !$isValueOfSortable &&
+            !$isKeyOfSortable &&
+            !$isCallableFunction
+        )
         {
             return $query;
         }
@@ -34,15 +51,20 @@ trait Sortable {
             $direction = config('gbrock-tables.default_direction');
         }
 
-        if(isset($this->sortable[$field]))
+        if($isKeyOfSortable)
         {
             // Set via key
             $sortField = $this->sortable[$field];
         }
-        elseif(in_array($field, $this->sortable))
+        elseif($isValueOfSortable)
         {
             // Does the passed field contain a period character?
             $sortField = strpos($field, '.') === FALSE ? $this->getTable() . '.' . $field : $field;
+        }
+        elseif($isCallableFunction)
+        {
+            // Call custom function and return immediately
+            return call_user_func([$this, $sortFunctionName], $query, $direction);
         }
 
         // At this point, all should be well, continue.
