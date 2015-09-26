@@ -11,7 +11,7 @@ class TableServiceProvider extends ServiceProvider {
      */
     public function register()
     {
-        $this->app->bind('table', function()
+        $this->app->singleton('table', function()
         {
             return new Table;
         });
@@ -24,8 +24,9 @@ class TableServiceProvider extends ServiceProvider {
     public function boot()
     {
         $root = __DIR__.'/../../';
+
         // Load views
-        $this->loadViewsFrom($root . 'resources/views', 'gbrock');
+        $this->loadViewsFrom($root . 'resources/views', 'table');
 
         // Publish views
         $this->publishes([
@@ -34,7 +35,7 @@ class TableServiceProvider extends ServiceProvider {
 
         // Publish configuration
         $this->publishes([
-            $root . 'config/tables.php' => config_path('gbrock-tables.php'),
+            $root . 'config/tables.php' => config_path('tables.php'),
         ]);
 
         // Merge user config, passing in our defaults
