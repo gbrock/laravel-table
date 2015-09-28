@@ -37,7 +37,7 @@ class Table {
      * @param mixed $columns
      * @return static
      */
-    public static function create($rows, $columns = [])
+    public function create($rows, $columns = [])
     {
         $table = new static($rows, $columns);
 
@@ -45,6 +45,8 @@ class Table {
     }
 
     /**
+     * Returns the name of the set view file.
+     *
      * @return string
      */
     public function getView()
@@ -53,6 +55,8 @@ class Table {
     }
 
     /**
+     * Sets the view file used for rendering.
+     *
      * @param string $view
      */
     public function setView($view, $vars = true)
@@ -67,18 +71,76 @@ class Table {
     /**
      * Add one column to the table.
      *
+     * @return Column
      */
     public function addColumn()
     {
-        $model = $this->models->first();
+        $new_column = forward_static_call_array([new Column, 'create'], func_get_args());
 
-        $new_column = forward_static_call_array([new Column(), 'create'], func_get_args());
-
-        $new_column->setOptionsFromModel($model);
+        $new_column->setOptionsFromModel($this->models->first());
 
         $this->columns[] =& $new_column;
 
         return $new_column;
+    }
+
+    /**
+     * Render the table view file.
+     * @return string
+     */
+    public function render()
+    {
+        $this->appendPaginationLinks();
+        return trim(view($this->view, $this->getData())->render());
+    }
+
+    /**
+     * Generate the data needed to render the view.
+     * @return array
+     */
+    public function getData()
+    {
+        return array_merge($this->viewVars, [
+            'rows' => $this->getRows(),
+            'columns' => $this->getColumns(),
+        ]);
+    }
+
+    /**
+     * Return current rows.
+     * @return Collection
+     */
+    public function getRows()
+    {
+        return $this->models;
+    }
+
+    /**
+     * Return current columns.
+     * @return Collection
+     */
+    public function getColumns()
+    {
+        return $this->columns;
+    }
+
+    /**
+     * Overwrite all current columns with the ones passed.
+     * @param mixed $columns
+     */
+    public function setColumns($columns)
+    {
+        $this->clearColumns();
+        $this->addColumns($columns);
+    }
+
+    /**
+     * Overwrite all current rows with the ones passed.
+     * @param $models
+     */
+    public function setModels($models)
+    {
+        $this->models = $models;
     }
 
     /**
@@ -140,65 +202,6 @@ class Table {
         }
 
         return $fields;
-    }
-
-    /**
-     * Render the table view file.
-     * @return array
-     */
-    public function render()
-    {
-        $this->appendPaginationLinks();
-        return trim(view($this->view, $this->getData())->render());
-    }
-
-    /**
-     * Generate the data needed to render the view.
-     * @return array
-     */
-    public function getData()
-    {
-        return array_merge($this->viewVars, [
-            'rows' => $this->getRows(),
-            'columns' => $this->getColumns(),
-        ]);
-    }
-
-    /**
-     * Return current rows.
-     * @return mixed
-     */
-    public function getRows()
-    {
-        return $this->models;
-    }
-
-    /**
-     * Return current columns.
-     * @return mixed
-     */
-    public function getColumns()
-    {
-        return $this->columns;
-    }
-
-    /**
-     * Overwrite all current columns with the ones passed.
-     * @param mixed $columns
-     */
-    public function setColumns($columns)
-    {
-        $this->clearColumns();
-        $this->addColumns($columns);
-    }
-
-    /**
-     * Overwrite all current rows with the ones passed.
-     * @param $models
-     */
-    public function setModels($models)
-    {
-        $this->models = $models;
     }
 
     /**
