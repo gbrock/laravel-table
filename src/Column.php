@@ -99,11 +99,11 @@ class Column
      */
     public function isSorted()
     {
-        if (Request::input(config('gbrock-tables.key_field')) == $this->getField()) {
+        if (Request::input(config('gbrock-tables.keys.field')) == $this->getField()) {
             return true;
         }
 
-        if (!Request::input(config('gbrock-tables.key_field')) && $this->model && $this->model->getSortingField() == $this->getField()) {
+        if (!Request::input(config('gbrock-tables.keys.field')) && $this->model && $this->model->getSortingField() == $this->getField()) {
             // No sorting was requested, but this is the default field.
             return true;
         }
@@ -128,8 +128,8 @@ class Column
 
         // Generate and return a URL which may be used to sort this column
         return $this->generateUrl(array_filter([
-            config('gbrock-tables.key_field')     => $this->getField(),
-            config('gbrock-tables.key_direction') => $direction,
+            config('gbrock-tables.keys.field')     => $this->getField(),
+            config('gbrock-tables.keys.direction') => $direction,
         ]));
     }
 
@@ -141,7 +141,7 @@ class Column
     {
         if ($this->isSorted()) {
             // If the column is currently being sorted, grab the direction from the query string
-            $this->direction = Request::input(config('gbrock-tables.key_direction'));
+            $this->direction = Request::input(config('gbrock-tables.keys.direction'));
         }
 
         if (!$this->direction) {
@@ -203,8 +203,8 @@ class Column
     protected function getCurrentInput()
     {
         return Input::only([
-            config('gbrock-tables.key_field')     => Request::input(config('gbrock-tables.key_field')),
-            config('gbrock-tables.key_direction') => Request::input(config('gbrock-tables.key_direction')),
+            config('gbrock-tables.keys.field')     => Request::input(config('gbrock-tables.keys.field')),
+            config('gbrock-tables.keys.direction') => Request::input(config('gbrock-tables.keys.direction')),
         ]);
     }
 

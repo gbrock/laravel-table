@@ -7,7 +7,7 @@ class Table {
 
     protected $models;
     protected $columns;
-    protected $view = 'gbrock::table';
+    protected $view = 'table::default';
     protected $viewVars = [];
 
     /**
@@ -149,7 +149,7 @@ class Table {
     public function render()
     {
         $this->appendPaginationLinks();
-        return view($this->view, $this->getData())->render();
+        return trim(view($this->view, $this->getData())->render());
     }
 
     /**

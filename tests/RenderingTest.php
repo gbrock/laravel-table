@@ -1,0 +1,23 @@
+<?php
+
+namespace Gbrock\Table\Tests;
+
+use Gbrock\Table\Facades\Table;
+use Gbrock\Table\Tests\Cases\DatabaseTestCase;
+use Gbrock\Table\Tests\Mocks\Game;
+
+class RenderingTest extends DatabaseTestCase
+{
+    public function test_it_renders_an_html_table()
+    {
+        Game::create(['name' => 'Rocket League']);
+
+        $rows = Game::all();
+        $table = Table::create($rows);
+
+        $rendered = $table->render();
+
+        $this->assertStringStartsWith('<table', $rendered);
+        $this->assertStringEndsWith('</table>', $rendered);
+    }
+}

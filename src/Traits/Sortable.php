@@ -4,6 +4,15 @@ use Illuminate\Support\Facades\Request;
 
 trait Sortable {
 
+    /**
+     * Adds the scope "sorted" to this model which handles automatic sorting of records based on GET parameters.
+     *
+     * @param $query
+     * @param bool|false $field
+     * @param bool|false $direction
+     * @return mixed
+     * @throws ModelMissingSortableArrayException
+     */
     public function scopeSorted($query, $field = false, $direction = false)
     {
         if($field === false)
