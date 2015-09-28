@@ -27,6 +27,12 @@ class Column
      */
     protected $renderer;
 
+    /**
+     * Create a Column instance based on an arbitrary number of arguments, between 1-3
+     *
+     * @return static
+     * @throws CallableFunctionNotProvidedException
+     */
     public static function create()
     {
         $args = func_get_args();
@@ -42,7 +48,7 @@ class Column
                     $class->setLabel(ucwords(str_replace('_', ' ', $args[0])));
                 } elseif (is_array($args[0])) {
                     // Just an array was sent; set the parameters.
-                    $class->setParameters($args);
+                    $class->setParameters($args[0]);
                 }
                 break;
             case 2: // two arguments
@@ -96,6 +102,8 @@ class Column
 
     /**
      * Checks if this column is currently being sorted.
+     *
+     * @return boolean
      */
     public function isSorted()
     {
@@ -113,6 +121,8 @@ class Column
 
     /**
      * Generates a URL to toggle sorting by this column.
+     *
+     * return string
      */
     public function getSortURL($direction = false)
     {
@@ -189,6 +199,12 @@ class Column
         return $this;
     }
 
+    /**
+     * Creates an anchor's href URL.
+     *
+     * @param array $parameters
+     * @return string
+     */
     public function generateUrl($parameters = [])
     {
         // Generate our needed parameters
@@ -200,6 +216,11 @@ class Column
         return url($path . '/?' . http_build_query($parameters));
     }
 
+    /**
+     * Gets the current sorting / sort direction options from GET.
+     *
+     * @return array
+     */
     protected function getCurrentInput()
     {
         return Input::only([
@@ -209,6 +230,8 @@ class Column
     }
 
     /**
+     * Returns the column's human-readable title.
+     *
      * @return string
      */
     public function getLabel()
@@ -217,6 +240,8 @@ class Column
     }
 
     /**
+     * Sets the column's human-readable title.
+     *
      * @param string $label
      * @return $this
      */
@@ -227,10 +252,21 @@ class Column
         return $this;
     }
 
+    /**
+     * Set several parameters at once.
+     *
+     * @param $arguments
+     * @return $this
+     */
     public function setParameters($arguments)
     {
         foreach ($arguments as $k => $v) {
-            $this->{'set' . ucfirst($k)}($v);
+            $method = 'set' . ucfirst($k);
+
+            if(is_callable([$this, $method]))
+            {
+                call_user_func_array([$this, $method], [$v]);
+            }
         }
 
         return $this;

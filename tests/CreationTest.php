@@ -27,7 +27,7 @@ class CreationTest extends DatabaseTestCase
         $rows = Game::all();
         $table = Table::create($rows, false);
 
-        $table->addColumn('id');
+        $table->addColumn(['field' => 'id']);
         $table->addColumn('name', 'Custom Column Name', function ($model) {
             return 'The name of the game is ' . $model->name;
         });
