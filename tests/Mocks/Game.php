@@ -11,4 +11,13 @@ class Game extends Model {
 
     protected $fillable = ['name', 'country'];
     protected $sortable = ['id', 'name'];
+
+    public function sortCountry($query, $direction = false)
+    {
+        if(!$direction) {
+            $direction = 'asc';
+        }
+
+        return $query->orderBy('country', $direction);
+    }
 }

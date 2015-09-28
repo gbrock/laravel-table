@@ -19,4 +19,15 @@ class SortingTest extends DatabaseTestCase {
 
         $this->assertEquals('Super Mario Bros. 2', array_get($rows->get(0), 'name'));
     }
+
+    public function test_custom_sorting_function()
+    {
+        Game::create(['name' => 'Final Fantasy 3', 'country' => 'us']);
+        Game::create(['name' => 'Final Fantasy VI', 'country' => 'jp']);
+
+        // "country" isn't sortable, but corresponds to a custom sorter function
+        $rows = Game::sorted('country')->get();
+
+        $this->assertEquals('jp', $rows->first()->getAttribute('country'));
+    }
 }

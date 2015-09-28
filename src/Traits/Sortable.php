@@ -50,7 +50,7 @@ trait Sortable {
         if($isCallableFunction)
         {
             // Call custom function and return immediately
-            return call_user_func([$this, $sortFunctionName], $query, $direction);
+            return call_user_func_array([$this, $sortFunctionName], [$query, $direction]);
         }
 
         // By default assume the $field is a member of the $sortable array
