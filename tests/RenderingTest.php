@@ -21,18 +21,20 @@ class RenderingTest extends DatabaseTestCase
         $this->assertStringEndsWith('</table>', $rendered);
     }
 
-    public function test_it_can_add_a_class_to_a_column()
+    public function test_it_can_add_classes_to_a_column()
     {
         Game::create(['name' => 'Chibi Robo']);
 
         $rows = Game::all();
         $table = Table::create($rows, false);
 
-        $table->addColumn(['field' => 'id'])->addClass('minimum-width-column');
+        $table->addColumn(['field' => 'id'])
+            ->addClass('minimum-width-column')
+            ->addClass('id-column');
 
         $rendered = $table->render();
 
-        $this->assertContains('<th class="minimum-width-column">', $rendered);
-        $this->assertContains('<td class="minimum-width-column">', $rendered);
+        $this->assertContains('<th class="minimum-width-column id-column">', $rendered);
+        $this->assertContains('<td class="minimum-width-column id-column">', $rendered);
     }
 }
