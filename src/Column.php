@@ -250,9 +250,7 @@ class Column
     public function render($data)
     {
         if ($this->hasRenderer()) {
-            $renderer = (string) $this->renderer;
-
-            return $renderer($data);
+            return $this->renderer->__invoke($data);
         }
     }
 

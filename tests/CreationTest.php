@@ -19,4 +19,22 @@ class CreationTest extends DatabaseTestCase
 
         $this->assertCount(1, $table->getColumns());
     }
+
+    public function test_it_can_add_a_column_renderer()
+    {
+        Game::create(['name' => 'Terraria']);
+
+        $rows = Game::all();
+        $table = Table::create($rows, false);
+
+        $table->addColumn('id');
+        $table->addColumn('name', 'Custom Column Name', function ($model) {
+            return 'The name of the game is ' . $model->name;
+        });
+
+        $rendered = $table->render();
+
+        $this->assertContains('Custom Column Name', $rendered);
+        $this->assertContains('The name of the game is Terraria', $rendered);
+    }
 }
