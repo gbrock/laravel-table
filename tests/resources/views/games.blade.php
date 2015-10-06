@@ -1,1 +1,1 @@
-Awesome.
+{!! $table->render() !!}

@@ -2,6 +2,9 @@
 
 namespace Gbrock\Table\Tests\Cases;
 
+use Gbrock\Table\Facades\Table;
+use Gbrock\Table\Tests\Constraints\PHPUnit_Framework_Constraint_ComesAfter;
+use Gbrock\Table\Tests\Mocks\Game;
 use Gbrock\Table\Tests\Providers\TableTestingServiceProvider;
 use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
 use Gbrock\Table\Providers\TableServiceProvider;
@@ -9,6 +12,7 @@ use Illuminate\Support\Facades\Crypt;
 
 abstract class TestCase extends BaseTestCase
 {
+
     protected $baseUrl = '';
 
     /**
@@ -35,7 +39,14 @@ abstract class TestCase extends BaseTestCase
 
         $router->group(['namespace' => 'Gbrock\Tables\Tests\Http'], function ($router) {
             get('/', function () {
-                return view('testing::games');
+                $rows = Game::sorted()
+                    ->paginate();
+                $table = Table::create($rows);
+
+                return view('testing::games', [
+                    'table' => $table,
+                    'rows' => $rows,
+                ]);
             });
         });
 
@@ -45,5 +56,23 @@ abstract class TestCase extends BaseTestCase
         ]);
 
         return $app;
+    }// ...
+
+    /**
+     * Asserts that the strings are seen in order
+     *
+     * @param $stringFirst
+     * @param $stringSecond
+     * @param string $message
+     */
+    protected function seeInOrder($stringFirst, $stringSecond, $message = '')
+    {
+        $body = $this->response->getContent();
+
+        $posFirst = strpos($body, $stringFirst);
+        $posSecond = strpos($body, $stringSecond);
+
+        $this->assertTrue($posFirst < $posSecond);
     }
+
 }
