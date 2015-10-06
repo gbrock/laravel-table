@@ -94,10 +94,10 @@ trait Sortable {
      */
     public function getSortingField()
     {
-        if(Request::input(config('gbrock-tables.key_field')))
+        if(Request::input(config('gbrock-tables.keys.field')))
         {
             // User is requesting a specific column
-            return Request::input(config('gbrock-tables.key_field'));
+            return Request::input(config('gbrock-tables.keys.field'));
         }
 
         // Otherwise return the primary key
@@ -112,14 +112,14 @@ trait Sortable {
      */
     protected function getSortingDirection()
     {
-        if(Request::input(config('gbrock-tables.key_direction')))
+        if(Request::input(config('gbrock-tables.keys.direction')))
         {
             // User is requesting a specific column
-            return Request::input(config('gbrock-tables.key_direction'));
+            return Request::input(config('gbrock-tables.keys.direction'));
         }
 
         // Otherwise return the primary key
-        return config('gbrock-tables.default_direction');
+        return config('gbrock-tables.defaults.direction');
     }
 
     public function getIsSortableAttribute()

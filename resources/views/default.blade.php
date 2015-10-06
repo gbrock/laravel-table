@@ -5,7 +5,7 @@
         @foreach($columns as $c)
             <th{!! $c->getClasses() ? ' class="' . $c->getClassString() . '"' : '' !!}>
                 @if($c->isSortable())
-                    <a href="{{ $c->getSortURL() }}">
+                    <a href="{!! $c->getSortURL() !!}">
                         {!! $c->getLabel() !!}
                         @if($c->isSorted())
                             @if($c->getDirection() == 'asc')
