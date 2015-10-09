@@ -140,6 +140,16 @@ class Table {
      */
     public function setModels($models)
     {
+        if(!is_object($models)) {
+            if(is_array($models)) {
+                foreach($models as $k => $v) {
+                    $models[$k] = new BlankModel($v);
+                }
+            }
+
+            $models = collect($models);
+        }
+
         $this->models = $models;
     }
 

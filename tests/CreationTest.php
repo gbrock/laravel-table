@@ -5,6 +5,7 @@ namespace Gbrock\Table\Tests;
 use Gbrock\Table\Facades\Table;
 use Gbrock\Table\Tests\Cases\DatabaseTestCase;
 use Gbrock\Table\Tests\Mocks\Game;
+use Illuminate\Support\Facades\DB;
 
 class CreationTest extends DatabaseTestCase
 {
@@ -36,5 +37,18 @@ class CreationTest extends DatabaseTestCase
 
         $this->assertContains('Custom Column Name', $rendered);
         $this->assertContains('The name of the game is Terraria', $rendered);
+    }
+
+    public function test_it_can_initialize_with_a_simple_array()
+    {
+        Game::create(['name' => 'Space Invaders']);
+        Game::create(['name' => 'Pac-man']);
+
+        $rows = DB::table('games')->get();
+        $table = Table::create($rows, ['id', 'name']);
+
+        $rendered = $table->render();
+
+        $this->assertContains('Space Invaders', $rendered);
     }
 }
