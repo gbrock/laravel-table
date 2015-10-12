@@ -3,8 +3,8 @@
 use Illuminate\Support\Facades\Input;
 use Gbrock\Table\Column;
 
-class Table {
-
+class Table
+{
     protected $models;
     protected $columns;
     protected $view = 'gbrock::table';
@@ -16,12 +16,10 @@ class Table {
      */
     public function __construct($models = [], $columns = [])
     {
-        if($models)
-        {
+        if ($models) {
             $this->setModels($models);
 
-            if(!$columns && $columns !== FALSE)
-            {
+            if (!$columns && $columns !== false) {
                 // Columns were not passed and were not prevented from auto-generation; generate them
                 $columns = $this->getFieldsFromModels($models);
             }
@@ -58,8 +56,7 @@ class Table {
     public function setView($view, $vars = true)
     {
         $this->view = $view;
-        if(is_array($vars) || !$vars)
-        {
+        if (is_array($vars) || !$vars) {
             $this->viewVars = $vars;
         }
     }
@@ -90,17 +87,12 @@ class Table {
     {
         $model = $this->models->first();
 
-        if($columns)
-        {
-            foreach($columns as $key => $field)
-            {
-                if(is_numeric($key))
-                {
+        if ($columns) {
+            foreach ($columns as $key => $field) {
+                if (is_numeric($key)) {
                     // Simple non-keyed array passed.
                     $new_column = Column::create($field);
-                }
-                else
-                {
+                } else {
                     // Key also matters, apparently
                     $new_column = Column::create($key, $field);
                 }
@@ -119,8 +111,7 @@ class Table {
      */
     protected function getFieldsFromModels($models)
     {
-        if(!$models->first())
-        {
+        if (!$models->first()) {
             // No models, we can't add any columns.
             return [];
         }
@@ -133,8 +124,7 @@ class Table {
         $fields = array_keys($model->toArray());
         // Remove the timestamp fields
         $fields = array_diff($fields, $timestamp_fields);
-        if($model->isSortable)
-        {
+        if ($model->isSortable) {
             // Add the fields from the model's sortable array
             $fields = array_unique(array_merge($fields, $model->getSortable()));
         }
@@ -149,6 +139,7 @@ class Table {
     public function render()
     {
         $this->appendPaginationLinks();
+
         return view($this->view, $this->getData())->render();
     }
 
@@ -159,7 +150,7 @@ class Table {
     public function getData()
     {
         return array_merge($this->viewVars, [
-            'rows' => $this->getRows(),
+            'rows'    => $this->getRows(),
             'columns' => $this->getColumns(),
         ]);
     }
@@ -198,6 +189,16 @@ class Table {
      */
     public function setModels($models)
     {
+        if (!is_object($models)) {
+            if (is_array($models)) {
+                foreach ($models as $k => $v) {
+                    $models[$k] = new BlankModel($v);
+                }
+            }
+
+            $models = collect($models);
+        }
+
         $this->models = $models;
     }
 
@@ -214,11 +215,10 @@ class Table {
      */
     private function appendPaginationLinks()
     {
-        if(class_basename($this->models) == 'LengthAwarePaginator')
-        {
+        if (class_basename($this->models) == 'LengthAwarePaginator') {
             // This set of models was paginated.  Make it append our current view variables.
-            $this->models->appends(Input::only(config('gbrock-tables.key_field'), config('gbrock-tables.key_direction')));
+            $this->models->appends(Input::only(config('gbrock-tables.key_field'),
+                config('gbrock-tables.key_direction')));
         }
     }
-
 }
