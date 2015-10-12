@@ -3,8 +3,9 @@
 [![Latest Tag](https://img.shields.io/github/tag/gbrock/laravel-table.svg)](https://github.com/gbrock/laravel-table/releases)
 <!--[![Build Status](https://img.shields.io/travis/gbrock/laravel-table.svg)](https://travis-ci.org/gbrock/laravel-table)-->
 
-This package contains flexible ways of rendering Eloquent collections as dynamic HTML tables.  This includes
-techniques for sortable columns, customizable cell data, automatic pagination, ~~user-definable rows-per-page, batch 
+When you need an HTML table that can be sorted, paginated, [filtered,] without relying on JavaScript.
+
+...sortable columns, customizable cell data, automatic pagination, ~~user-definable rows-per-page, batch 
 action handling, and extensible filtering~~ (coming soon).
 
 
@@ -32,30 +33,19 @@ php artisan vendor:publish
 
 ## Usage
 
-**In order to render an HTML table of Eloquent models into a view**, first create a Table object, passing in your
- model collection (this could be done in your controller, repository, or any service class):
+Just give it an Eloquent collection, and `render()` the result:
  
  ```php
- $rows = User::get(); // Get all users from the database
- $table = Table::create($rows); // Generate a Table based on these "rows"
+ // You can select any models using any query supported by Laravel.
+ $rows = User::get();
+ 
+ // Generate a Table object based on these "rows".
+ $table = Table::create($rows);
+ 
+ // Render the HTML table.
+ echo $table->render(); // Render a full HTML table.
  ```
  
- Then pass that object to your view:
-
-```php
-return view('users.index', ['table' => $table]);
-```
-
-In your view, the table object can be rendered using its `render` function:
-
-```php
-{!! $table->render() !!}
-```
-
-Which would render something like this:
-
-![Basic example](https://raw.githubusercontent.com/gbrock/laravel-table/master/examples/images/basic_initialization.png)
-
 ### Sorting
 
 To add links in your headers which sort the indicated column, add the `Sortable` trait to your model.  Since no 
