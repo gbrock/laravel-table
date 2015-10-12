@@ -90,7 +90,7 @@ class Column
             return $this;
         }
 
-        if ($model->is_sortable && in_array($this->getField(), $model->getSortable())) {
+        if (property_exists($model, 'is_sortable') && $model->is_sortable && in_array($this->getField(), $model->getSortable())) {
             // The model dictates that this column should be sortable
             $this->setSortable(true);
         }
