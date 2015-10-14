@@ -2,7 +2,9 @@
 
 namespace Gbrock\Table;
 
-class BlankModel {
+use Illuminate\Contracts\Support\Arrayable;
+
+class BlankModel implements Arrayable {
     private $attributes;
 
     public function __construct($attributes)
@@ -18,5 +20,15 @@ class BlankModel {
     public function __call($name, $arguments = [])
     {
         return;
+    }
+
+    /**
+     * Get the instance as an array.
+     *
+     * @return array
+     */
+    public function toArray()
+    {
+        return $this->attributes;
     }
 }

@@ -21,7 +21,7 @@ class Table
 
             if (!$columns && $columns !== false) {
                 // Columns were not passed and were not prevented from auto-generation; generate them
-                $columns = $this->getFieldsFromModels($models);
+                $columns = $this->getFieldsFromModels($this->models);
             }
 
             $this->setColumns($columns);
@@ -191,12 +191,15 @@ class Table
     {
         if (!is_object($models)) {
             if (is_array($models)) {
-                foreach ($models as $k => $v) {
-                    $models[$k] = new BlankModel($v);
-                }
+                $models = collect($models);
             }
+        }
 
-            $models = collect($models);
+        if(class_basename($models->first()) == 'stdClass')
+        {
+            $models = $models->map(function ($array) {
+                return new BlankModel($array);
+            });
         }
 
         $this->models = $models;
