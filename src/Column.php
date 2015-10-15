@@ -138,8 +138,7 @@ class Column
 
         // Generate and return a URL which may be used to sort this column
         return $this->generateUrl(array_filter([
-            config('gbrock-tables.keys.field')     => $this->getField(),
-            config('gbrock-tables.keys.direction') => $direction,
+            config('gbrock-tables.keys.field')     => $this->getField() . ',' . $direction,
         ]));
     }
 

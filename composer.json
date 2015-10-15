@@ -1,7 +1,7 @@
 {
     "name": "gbrock/laravel-table",
     "description": "Table functionality for Laravel models",
-    "keywords": ["laravel","table","html","model","sorting","filtering"],
+    "keywords": ["laravel","table","html","eloquent","model"],
     "license": "MIT",
     "authors": [
         {
@@ -12,7 +12,9 @@
         }
     ],
     "require": {
-        "laravel/framework": "^5.1"
+        "laravel/framework": "^5.1",
+        "jedrzej/searchable": "0.0.6",
+        "jedrzej/sortable": "0.0.4"
     },
     "require-dev": {
         "laravel/laravel": "^5.1",

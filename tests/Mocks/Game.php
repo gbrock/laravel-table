@@ -2,15 +2,15 @@
 
 namespace Gbrock\Table\Tests\Mocks;
 
-use Gbrock\Table\Traits\Sortable;
 use Illuminate\Database\Eloquent\Model;
+use Jedrzej\Sortable\SortableTrait;
 
 class Game extends Model {
 
-    use Sortable;
+    use SortableTrait;
 
     protected $fillable = ['name', 'country'];
-    protected $sortable = ['id', 'name'];
+    protected $sortable = ['id', 'name', 'country'];
 
     public function sortCountry($query, $direction = false)
     {

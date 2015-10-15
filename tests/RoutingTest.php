@@ -26,8 +26,7 @@ class RoutingTest extends DatabaseTestCase {
         $this->seeInOrder('Super Mario', 'Final Fantasy');
 
         $this->visit('/?' . http_build_query([
-            'sort'=>'id',
-            'dir'=>'desc',
+            'sort'=>'id,desc',
         ]));
 
         $this->seeInOrder('Final Fantasy', 'Super Mario');
