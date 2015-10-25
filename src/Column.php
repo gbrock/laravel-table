@@ -124,7 +124,7 @@ class Column
      *
      * return string
      */
-    public function getSortURL($direction = false)
+    public function getSortURL($direction = false, $secure = false)
     {
         if (!$direction) {
             // No direction indicated, determine automatically from defaults.
@@ -139,7 +139,7 @@ class Column
         // Generate and return a URL which may be used to sort this column
         return $this->generateUrl(array_filter([
             config('gbrock-tables.keys.field')     => $this->getField() . ',' . $direction,
-        ]));
+        ]), $secure);
     }
 
     /**
@@ -202,9 +202,10 @@ class Column
      * Creates an anchor's href URL.
      *
      * @param array $parameters
+     * @param bool $secure
      * @return string
      */
-    public function generateUrl($parameters = [])
+    public function generateUrl($parameters = [], $secure = false)
     {
         // Generate our needed parameters
         $parameters = array_merge($this->getCurrentInput(), $parameters);
@@ -212,7 +213,7 @@ class Column
         // Grab the current URL
         $path = URL::getRequest()->path();
 
-        return url($path . '/?' . http_build_query($parameters));
+        return url($path . '?' . http_build_query($parameters), [], $secure);
     }
 
     /**
