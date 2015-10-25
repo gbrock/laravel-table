@@ -44,7 +44,7 @@ class CreationTest extends DatabaseTestCase
         Game::create(['name' => 'Space Invaders']);
         Game::create(['name' => 'Pac-man']);
 
-        $rows = DB::table('games')->paginate();
+        $rows = DB::table('games')->get();
         $table = Table::create($rows, ['id', 'name']);
 
         $rendered = $table->render();
