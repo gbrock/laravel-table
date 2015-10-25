@@ -20,6 +20,7 @@ class Column
     protected $sortable = false;
     /** @var array The CSS classes applied to the column */
     protected $classes = [];
+
     /**
      * @var closure
      * A rendering closure used when generating cell data, accepts the model:
@@ -90,7 +91,9 @@ class Column
             return $this;
         }
 
-        if (property_exists($model, 'is_sortable') && $model->is_sortable && in_array($this->getField(), $model->getSortable())) {
+        if (property_exists($model, 'is_sortable') && $model->is_sortable && in_array($this->getField(),
+                $model->getSortable())
+        ) {
             // The model dictates that this column should be sortable
             $this->setSortable(true);
         }
@@ -138,7 +141,7 @@ class Column
 
         // Generate and return a URL which may be used to sort this column
         return $this->generateUrl(array_filter([
-            config('gbrock-tables.keys.field')     => $this->getField() . ',' . $direction,
+            config('gbrock-tables.keys.field') => $this->getField() . ',' . $direction,
         ]), $secure);
     }
 
@@ -263,8 +266,7 @@ class Column
         foreach ($arguments as $k => $v) {
             $method = 'set' . ucfirst($k);
 
-            if(is_callable([$this, $method]))
-            {
+            if (is_callable([$this, $method])) {
                 call_user_func_array([$this, $method], [$v]);
             }
         }

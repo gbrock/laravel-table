@@ -3,8 +3,8 @@
 use Illuminate\Support\Facades\Input;
 use Gbrock\Table\Column;
 
-class Table {
-
+class Table
+{
     protected $models;
     protected $columns;
     protected $view = 'table::default';
@@ -16,17 +16,17 @@ class Table {
      */
     public function __construct($models = [], $columns = [])
     {
-        if($models)
-        {
+        if ($models) {
             $this->setModels($models);
 
-            if(!$columns && $columns !== FALSE)
-            {
+            if (!$columns && $columns !== false) {
                 // Columns were not passed and were not prevented from auto-generation; generate them
                 $columns = $this->getFieldsFromModels($models);
             }
 
-            $this->setColumns($columns);
+            if ($columns) {
+                $this->setColumns($columns);
+            }
         }
     }
 
@@ -45,52 +45,13 @@ class Table {
     }
 
     /**
-     * Returns the name of the set view file.
-     *
-     * @return string
-     */
-    public function getView()
-    {
-        return $this->view;
-    }
-
-    /**
-     * Sets the view file used for rendering.
-     *
-     * @param string $view
-     */
-    public function setView($view, $vars = true)
-    {
-        $this->view = $view;
-        if(is_array($vars) || !$vars)
-        {
-            $this->viewVars = $vars;
-        }
-    }
-
-    /**
-     * Add one column to the table.
-     *
-     * @return Column
-     */
-    public function addColumn()
-    {
-        $new_column = forward_static_call_array([new Column, 'create'], func_get_args());
-
-        $new_column->setOptionsFromModel($this->models->first());
-
-        $this->columns[] =& $new_column;
-
-        return $new_column;
-    }
-
-    /**
      * Render the table view file.
      * @return string
      */
     public function render()
     {
         $this->appendPaginationLinks();
+
         return trim(view($this->view, $this->getData())->render());
     }
 
@@ -101,7 +62,7 @@ class Table {
     public function getData()
     {
         return array_merge($this->viewVars, [
-            'rows' => $this->getRows(),
+            'rows'    => $this->getRows(),
             'columns' => $this->getColumns(),
         ]);
     }
@@ -110,9 +71,37 @@ class Table {
      * Return current rows.
      * @return Collection
      */
-    public function getRows()
+    public function getModels()
     {
         return $this->models;
+    }
+
+    /**
+     * Overwrite all current rows with the ones passed.
+     * @param $models
+     */
+    public function setModels($models)
+    {
+        if (!is_object($models)) {
+            if (is_array($models)) {
+                foreach ($models as $k => $v) {
+                    $models[$k] = new BlankModel($v);
+                }
+            }
+
+            $models = collect($models);
+        }
+
+        $this->models = $models;
+    }
+
+    /**
+     * Alias for models.
+     * @return Collection
+     */
+    public function getRows()
+    {
+        return $this->getModels();
     }
 
     /**
@@ -135,22 +124,19 @@ class Table {
     }
 
     /**
-     * Overwrite all current rows with the ones passed.
-     * @param $models
+     * Add one column to the table.
+     *
+     * @return Column
      */
-    public function setModels($models)
+    public function addColumn()
     {
-        if(!is_object($models)) {
-            if(is_array($models)) {
-                foreach($models as $k => $v) {
-                    $models[$k] = new BlankModel($v);
-                }
-            }
+        $new_column = forward_static_call_array([new Column, 'create'], func_get_args());
 
-            $models = collect($models);
-        }
+        $new_column->setOptionsFromModel($this->models->first());
 
-        $this->models = $models;
+        $this->columns[] =& $new_column;
+
+        return $new_column;
     }
 
     /**
@@ -158,29 +144,43 @@ class Table {
      * @param $columns
      * @throws ColumnKeyNotProvidedException
      */
-    protected function addColumns($columns)
+    public function addColumns($columns)
     {
-        $model = $this->models->first();
-
-        if($columns)
-        {
-            foreach($columns as $key => $field)
-            {
-                if(is_numeric($key))
-                {
-                    // Simple non-keyed array passed.
-                    $new_column = Column::create($field);
-                }
-                else
-                {
-                    // Key also matters, apparently
-                    $new_column = Column::create($key, $field);
-                }
-
-                $new_column->setOptionsFromModel($model);
-
-                $this->columns[] = $new_column;
+        foreach ($columns as $key => $field) {
+            if (is_numeric($key)) {
+                // Simple non-keyed array passed.
+                $new_column = Column::create($field);
+            } else {
+                // Key passed explicitly
+                $new_column = Column::create($key, $field);
             }
+
+            $new_column->setOptionsFromModel($this->models->first());
+
+            $this->columns[] = $new_column;
+        }
+    }
+
+    /**
+     * Returns the name of the set view file.
+     *
+     * @return string
+     */
+    public function getView()
+    {
+        return $this->view;
+    }
+
+    /**
+     * Sets the view file used for rendering.
+     *
+     * @param string $view
+     */
+    public function setView($view, $vars = true)
+    {
+        $this->view = $view;
+        if (is_array($vars) || !$vars) {
+            $this->viewVars = $vars;
         }
     }
 
@@ -191,8 +191,7 @@ class Table {
      */
     protected function getFieldsFromModels($models)
     {
-        if(!$models->first())
-        {
+        if (!$models->first()) {
             // No models, we can't add any columns.
             return [];
         }
@@ -205,8 +204,8 @@ class Table {
         $fields = array_keys($model->toArray());
         // Remove the timestamp fields
         $fields = array_diff($fields, $timestamp_fields);
-        if($model->isSortable)
-        {
+
+        if ($model->isSortable) {
             // Add the fields from the model's sortable array
             $fields = array_unique(array_merge($fields, $model->getSortable()));
         }
@@ -217,7 +216,7 @@ class Table {
     /**
      * Remove all currently-set columns.
      */
-    private function clearColumns()
+    protected function clearColumns()
     {
         $this->columns = [];
     }
@@ -225,13 +224,12 @@ class Table {
     /**
      * If rows were paginated, add our variables to the pagination query string
      */
-    private function appendPaginationLinks()
+    protected function appendPaginationLinks()
     {
-        if(class_basename($this->models) == 'LengthAwarePaginator')
-        {
+        if (class_basename($this->models) == 'LengthAwarePaginator') {
             // This set of models was paginated.  Make it append our current view variables.
-            $this->models->appends(Input::only(config('gbrock-tables.keys.field'), config('gbrock-tables.keys.direction')));
+            $this->models->appends(Input::only(config('gbrock-tables.keys.field'),
+                config('gbrock-tables.keys.direction')));
         }
     }
-
 }
