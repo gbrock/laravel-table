@@ -277,7 +277,7 @@ class Column
         return $this;
     }
     
-    public function setClass($class)
+    public function setClasses($class)
     {
         $this->classes = explode(" ", $class);
 
