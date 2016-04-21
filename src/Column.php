@@ -276,6 +276,13 @@ class Column
 
         return $this;
     }
+    
+    public function setClasses($class)
+    {
+        $this->classes = explode(" ", $class);
+
+        return $this;
+    }
 
     /**
      * @return array
