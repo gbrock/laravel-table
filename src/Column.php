@@ -40,7 +40,7 @@ class Column
                     $class->setLabel(ucwords(str_replace('_', ' ', $args[0])));
                 } elseif (is_array($args[0])) {
                     // Just an array was sent; set the parameters.
-                    $class->setParameters($args);
+                    $class->setParameters($args[0]);
                 }
                 break;
             case 2: // two arguments
