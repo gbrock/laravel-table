@@ -18,7 +18,9 @@ class Column
     protected $sortable = false;
     /** @var array The CSS classes applied to the column */
     protected $classes = [];
-    /**
+    /** @var array The attributes applied to the column */
+    protected $attributes = [];
+     /**
      * @var closure
      * A rendering closure used when generating cell data, accepts the model:
      * $column->setRenderer(function($model){ return '<strong>' . $model->id . '</strong>'; })
@@ -298,5 +300,29 @@ class Column
     public function getClassString()
     {
         return implode(' ', array_filter($this->classes));
+    }
+
+    public function renderAttributes($data)
+    {
+        $attr = '';
+
+        foreach ($this->attributes AS $key => $value) {
+            $attr .= $key . '="';
+            if (is_callable($value)) {
+                $attr .= $value($data);
+            } else {
+                $attr .= $value;
+            }
+            $attr .= '"';
+        }
+
+        return $attr;
+    }
+
+    public function addAttributes($args)
+    {
+        $this->attributes = $args;
+
+        return $this;
     }
 }

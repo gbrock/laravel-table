@@ -30,7 +30,7 @@
 
         <tr>
             @foreach($columns as $c)
-                <td {!! $c->getClasses() ? ' class="' . $c->getClassString() . '"' : '' !!}>
+                <td {!! $c->getClasses() ? ' class="' . $c->getClassString() . '"' : '' !!} {!! $c->renderAttributes($r) !!}>
                  @if($c->hasRenderer())
                     {{-- Custom renderer applied to this column, call it now --}}
                     {!! $c->render($r) !!}
