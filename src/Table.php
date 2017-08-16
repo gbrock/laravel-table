@@ -219,9 +219,9 @@ class Table
     private function appendPaginationLinks()
     {
         if (class_basename($this->models) == 'LengthAwarePaginator') {
+            $allowed_parameters = array_merge([config('gbrock-tables.key_field'), config('gbrock-tables.key_direction')], config('gbrock-tables.allowed_parameters'));
             // This set of models was paginated.  Make it append our current view variables.
-            $this->models->appends(Input::only(config('gbrock-tables.key_field'),
-                config('gbrock-tables.key_direction')));
+            $this->models->appends(Input::only($allowed_parameters));
         }
     }
 }
