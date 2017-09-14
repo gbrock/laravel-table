@@ -6,15 +6,8 @@ trait Sortable {
 
     public function scopeSorted($query, $field = false, $direction = false)
     {
-        if($field === false)
-        {
-            $field = $this->getSortingField();
-        }
-
-        if($direction === false)
-        {
-            $direction = $this->getSortingDirection();
-        }
+        $field = $this->getSortingField($field);
+        $direction = $this->getSortingDirection($direction);
 
         if(
             !isset($this->sortable) || // are sortables present?
@@ -83,16 +76,23 @@ trait Sortable {
      *
      * @return string
      */
-    public function getSortingField()
+    public function getSortingField($field=false)
     {
         if(Request::input(config('gbrock-tables.key_field')))
         {
             // User is requesting a specific column
             return Request::input(config('gbrock-tables.key_field'));
         }
-
-        // Otherwise return the primary key
-        return $this->getKeyName();
+        elseif($field !== false)
+        {
+            // Specific field passed to sortable() method
+            return $field;
+        }
+        else
+        {
+            // Otherwise return the primary key
+            return $this->getKeyName();
+        }
     }
 
     /**
@@ -101,16 +101,24 @@ trait Sortable {
      *
      * @return string
      */
-    protected function getSortingDirection()
+    protected function getSortingDirection($direction=false)
     {
         if(Request::input(config('gbrock-tables.key_direction')))
         {
             // User is requesting a specific column
             return Request::input(config('gbrock-tables.key_direction'));
         }
+        elseif($direction !== false)
+        {
+            // Specific direction passed to sortable() method
+            return $direction;
+        }
+        else
+        {
+            // Otherwise return the primary key
+            return config('gbrock-tables.default_direction');
+        }
 
-        // Otherwise return the primary key
-        return config('gbrock-tables.default_direction');
     }
 
     public function getIsSortableAttribute()
@@ -118,4 +126,3 @@ trait Sortable {
         return true;
     }
 }
-
