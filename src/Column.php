@@ -58,6 +58,7 @@ class Column
                 }
                 break;
             case 3: // three arguments
+            case 4: // four arguments
                 if (is_string($args[0]) && is_string($args[1]) && is_callable($args[2])) {
                     // Field, Label, and [rendering] Closure.  Standard View addition.
                     $class->setField($args[0]);
@@ -276,7 +277,7 @@ class Column
 
         return $this;
     }
-    
+
     public function setClasses($class)
     {
         $this->classes = explode(" ", $class);

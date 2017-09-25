@@ -67,13 +67,20 @@ class Table
      */
     public function addColumn()
     {
+        $args = func_get_args();
+
         $model = $this->models->first();
 
-        $new_column = forward_static_call_array([new Column(), 'create'], func_get_args());
+        $new_column = forward_static_call_array([new Column(), 'create'], $args);
 
         $new_column->setOptionsFromModel($model);
 
-        $this->columns[] =& $new_column;
+        if(count($args) == 4 && is_integer($args[3])) {
+            array_splice($this->columns, $args[3], 0, [&$new_column]);
+        }
+        else {
+            $this->columns[] =& $new_column;
+        }
 
         return $new_column;
     }
