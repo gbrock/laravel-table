@@ -201,10 +201,18 @@ class Column
 
     protected function getCurrentInput()
     {
-        return Input::only([
+        $current_inputs = [
             config('gbrock-tables.key_field')     => Request::input(config('gbrock-tables.key_field')),
             config('gbrock-tables.key_direction') => Request::input(config('gbrock-tables.key_direction')),
-        ]);
+        ];
+
+        if(count(config('gbrock-tables.allowed_parameters')) > 0) {
+            foreach(config('gbrock-tables.allowed_parameters') as $allowed_parameter) {
+                $current_inputs[$allowed_parameter] = Request::input($allowed_parameter);
+            }
+        }
+      
+        return Input::only($current_inputs);
     }
 
     /**
