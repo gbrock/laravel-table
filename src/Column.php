@@ -66,6 +66,14 @@ class Column
                     $class->setField($args[0]);
                     $class->setLabel($args[1]);
                     $class->setRenderer($args[2]);
+                } elseif (is_string($args[0]) && is_array($args[1]) && is_callable($args[2])) {
+                    // Field, quick parameters, and [rendering] Closure.  Standard View addition.
+                    $class->setField($args[0]);
+                    $class->setParameters($args[1]);
+                    if (!isset($args[1]['label'])) {
+                        $class->setLabel(ucwords(str_replace('_', ' ', $args[0])));
+                    }
+                    $class->setRenderer($args[2]);
                 }
                 break;
         }
