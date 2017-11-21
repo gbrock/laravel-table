@@ -36,7 +36,7 @@
                     {!! $c->render($r) !!}
                     @else
                     {{-- Use the "rendered_foo" field, if available, else use the plain "foo" field --}}
-                        {!! $r->{'rendered_' . $c->getField()} or $r->{$c->getField()} !!}
+                        {!! $r->{'rendered_' . $c->getModelField()} or $r->{$c->getModelField()} !!}
                     @endif
                 </td>
             @endforeach

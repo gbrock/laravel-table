@@ -169,6 +169,15 @@ class Column
     }
 
     /**
+     * @return string
+     */
+    public function getModelField()
+    {
+        $field_parts = explode('.', $this->field);
+        return end($field_parts);
+    }
+
+    /**
      * @param string $field
      * @return $this
      */
