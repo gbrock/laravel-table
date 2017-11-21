@@ -18,6 +18,8 @@ class Column
     protected $sortable = false;
     /** @var array The CSS classes applied to the column */
     protected $classes = [];
+    /** @var array The data attributes applied to the column */
+    protected $data = [];
     /**
      * @var closure
      * A rendering closure used when generating cell data, accepts the model:
@@ -211,7 +213,7 @@ class Column
                 $current_inputs[$allowed_parameter] = Request::input($allowed_parameter);
             }
         }
-      
+
         return Input::only($current_inputs);
     }
 
@@ -237,7 +239,15 @@ class Column
     public function setParameters($arguments)
     {
         foreach ($arguments as $k => $v) {
-            $this->{'set' . ucfirst($k)}($v);
+            $ks = explode('-', $k);
+            if($ks[0]=='data') {
+                $m = array_shift($ks);
+                $k = implode('-', $ks);
+                $this->{'set' . ucfirst($m)}($k, $v);
+            }
+            else {
+                $this->{'set' . ucfirst($k)}($v);
+            }
         }
 
         return $this;
@@ -307,5 +317,38 @@ class Column
     public function getClassString()
     {
         return implode(' ', array_filter($this->classes));
+    }
+
+    /**
+     * @return array
+     */
+    public function setData($attribute, $value)
+    {
+        $this->data[] = [
+            'attribute' => 'data-'.$attribute,
+            'value' => $value
+        ];
+
+        return $this;
+    }
+
+    /**
+     * @return array
+     */
+    public function getData()
+    {
+        return $this->data;
+    }
+
+    /**
+     * @return array
+     */
+    public function getDataString()
+    {
+        $data = [];
+        foreach($this->data as $d) {
+            $data[] = $d['attribute'].'="'.$d['value'].'"';
+        }
+        return implode(' ', $data);
     }
 }

@@ -3,7 +3,7 @@
 	<thead>
 		<tr>
         @foreach($columns as $c)
-            <th {!! $c->getClasses() ? ' class="' . $c->getClassString() . '"' : '' !!}>
+            <th{!! $c->getClasses() ? ' class="' . $c->getClassString() . '"' : '' !!}{!! $c->getData() ? ' ' . $c->getDataString() : '' !!}>
                 @if($c->isSortable())
                     <a href="{{ $c->getSortURL() }}">
                         {!! $c->getLabel() !!}
@@ -30,7 +30,7 @@
 
         <tr>
             @foreach($columns as $c)
-                <td {!! $c->getClasses() ? ' class="' . $c->getClassString() . '"' : '' !!}>
+                <td{!! $c->getClasses() ? ' class="' . $c->getClassString() . '"' : '' !!}{!! $c->getData() ? ' ' . $c->getDataString() : '' !!}>
                  @if($c->hasRenderer())
                     {{-- Custom renderer applied to this column, call it now --}}
                     {!! $c->render($r) !!}
