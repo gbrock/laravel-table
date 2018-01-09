@@ -1,7 +1,6 @@
 <?php namespace Gbrock\Table;
 
 use Illuminate\Support\Facades\Request;
-use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\URL;
 
 class Column
@@ -212,6 +211,7 @@ class Column
         // Generate our needed parameters
         $parameters = array_merge($this->getCurrentInput(), $parameters);
 
+
         // Grab the current URL
         $path = URL::getRequest()->path();
 
@@ -230,8 +230,7 @@ class Column
                 $current_inputs[$allowed_parameter] = Request::input($allowed_parameter);
             }
         }
-
-        return Input::only($current_inputs);
+        return $current_inputs;
     }
 
     /**
