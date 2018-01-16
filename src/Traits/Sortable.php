@@ -7,7 +7,7 @@ trait Sortable {
     public function scopeSorted($query, $field = false, $direction = false)
     {
         $field = $this->getSortingField($field);
-        $direction = $this->getSortingDirection($direction);
+        $direction = $this->getSortingDirection(strtolower($direction));
 
         if(
             !isset($this->sortable) || // are sortables present?
@@ -85,6 +85,9 @@ trait Sortable {
         }
         elseif($field !== false)
         {
+            // Merge manually set sort field into request, so view column indicators work
+            Request::merge([config('gbrock-tables.key_field') => $field]);
+
             // Specific field passed to sortable() method
             return $field;
         }
@@ -110,6 +113,9 @@ trait Sortable {
         }
         elseif($direction !== false)
         {
+            // Merge manually set sort direction into request, so view column indicators work
+            Request::merge([config('gbrock-tables.key_direction') => $direction]);
+
             // Specific direction passed to sortable() method
             return $direction;
         }
