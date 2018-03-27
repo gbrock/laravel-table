@@ -35,7 +35,7 @@ class Table
      * @param mixed $columns
      * @return static
      */
-    public function create($rows, $columns = [])
+    public static function create($rows, $columns = [])
     {
         $table = new static($rows, $columns);
 
