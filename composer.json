@@ -1,5 +1,5 @@
 {
-    "name": "gbrock/laravel-table",
+    "name": "brynj-digital/laravel-table",
     "description": "Table functionality for Laravel models",
     "keywords": ["laravel","table","html","model","sorting","filtering"],
     "license": "MIT",

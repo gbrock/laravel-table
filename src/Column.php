@@ -1,7 +1,6 @@
 <?php namespace Gbrock\Table;
 
 use Illuminate\Support\Facades\Request;
-use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\URL;
 
 class Column
@@ -18,6 +17,8 @@ class Column
     protected $sortable = false;
     /** @var array The CSS classes applied to the column */
     protected $classes = [];
+    /** @var array The data attributes applied to the column */
+    protected $data = [];
     /**
      * @var closure
      * A rendering closure used when generating cell data, accepts the model:
@@ -58,10 +59,19 @@ class Column
                 }
                 break;
             case 3: // three arguments
+            case 4: // four arguments
                 if (is_string($args[0]) && is_string($args[1]) && is_callable($args[2])) {
                     // Field, Label, and [rendering] Closure.  Standard View addition.
                     $class->setField($args[0]);
                     $class->setLabel($args[1]);
+                    $class->setRenderer($args[2]);
+                } elseif (is_string($args[0]) && is_array($args[1]) && is_callable($args[2])) {
+                    // Field, quick parameters, and [rendering] Closure.  Standard View addition.
+                    $class->setField($args[0]);
+                    $class->setParameters($args[1]);
+                    if (!isset($args[1]['label'])) {
+                        $class->setLabel(ucwords(str_replace('_', ' ', $args[0])));
+                    }
                     $class->setRenderer($args[2]);
                 }
                 break;
@@ -158,6 +168,15 @@ class Column
     }
 
     /**
+     * @return string
+     */
+    public function getModelField()
+    {
+        $field_parts = explode('.', $this->field);
+        return end($field_parts);
+    }
+
+    /**
      * @param string $field
      * @return $this
      */
@@ -192,6 +211,7 @@ class Column
         // Generate our needed parameters
         $parameters = array_merge($this->getCurrentInput(), $parameters);
 
+
         // Grab the current URL
         $path = URL::getRequest()->path();
 
@@ -200,10 +220,17 @@ class Column
 
     protected function getCurrentInput()
     {
-        return Input::only([
+        $current_inputs = [
             config('gbrock-tables.key_field')     => Request::input(config('gbrock-tables.key_field')),
             config('gbrock-tables.key_direction') => Request::input(config('gbrock-tables.key_direction')),
-        ]);
+        ];
+
+        if(count(config('gbrock-tables.allowed_parameters')) > 0) {
+            foreach(config('gbrock-tables.allowed_parameters') as $allowed_parameter) {
+                $current_inputs[$allowed_parameter] = Request::input($allowed_parameter);
+            }
+        }
+        return $current_inputs;
     }
 
     /**
@@ -228,7 +255,15 @@ class Column
     public function setParameters($arguments)
     {
         foreach ($arguments as $k => $v) {
-            $this->{'set' . ucfirst($k)}($v);
+            $ks = explode('-', $k);
+            if($ks[0]=='data') {
+                $m = array_shift($ks);
+                $k = implode('-', $ks);
+                $this->{'set' . ucfirst($m)}($k, $v);
+            }
+            else {
+                $this->{'set' . ucfirst($k)}($v);
+            }
         }
 
         return $this;
@@ -276,7 +311,7 @@ class Column
 
         return $this;
     }
-    
+
     public function setClasses($class)
     {
         $this->classes = explode(" ", $class);
@@ -298,5 +333,38 @@ class Column
     public function getClassString()
     {
         return implode(' ', array_filter($this->classes));
+    }
+
+    /**
+     * @return array
+     */
+    public function setData($attribute, $value)
+    {
+        $this->data[] = [
+            'attribute' => 'data-'.$attribute,
+            'value' => $value
+        ];
+
+        return $this;
+    }
+
+    /**
+     * @return array
+     */
+    public function getData()
+    {
+        return $this->data;
+    }
+
+    /**
+     * @return array
+     */
+    public function getDataString()
+    {
+        $data = [];
+        foreach($this->data as $d) {
+            $data[] = $d['attribute'].'="'.$d['value'].'"';
+        }
+        return implode(' ', $data);
     }
 }

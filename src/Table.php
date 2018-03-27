@@ -35,7 +35,7 @@ class Table
      * @param mixed $columns
      * @return static
      */
-    public function create($rows, $columns = [])
+    public static function create($rows, $columns = [])
     {
         $table = new static($rows, $columns);
 
@@ -67,13 +67,20 @@ class Table
      */
     public function addColumn()
     {
+        $args = func_get_args();
+
         $model = $this->models->first();
 
-        $new_column = forward_static_call_array([new Column(), 'create'], func_get_args());
+        $new_column = forward_static_call_array([new Column(), 'create'], $args);
 
         $new_column->setOptionsFromModel($model);
 
-        $this->columns[] =& $new_column;
+        if(count($args) == 4 && is_integer($args[3])) {
+            array_splice($this->columns, $args[3], 0, [&$new_column]);
+        }
+        else {
+            $this->columns[] =& $new_column;
+        }
 
         return $new_column;
     }
@@ -219,9 +226,9 @@ class Table
     private function appendPaginationLinks()
     {
         if (class_basename($this->models) == 'LengthAwarePaginator') {
+            $allowed_parameters = array_merge([config('gbrock-tables.key_field'), config('gbrock-tables.key_direction')], config('gbrock-tables.allowed_parameters'));
             // This set of models was paginated.  Make it append our current view variables.
-            $this->models->appends(Input::only(config('gbrock-tables.key_field'),
-                config('gbrock-tables.key_direction')));
+            $this->models->appends(Input::only($allowed_parameters));
         }
     }
 }
