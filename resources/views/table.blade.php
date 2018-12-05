@@ -1,4 +1,8 @@
-<table class="{{ $class or 'table' }}">
+@if (App::VERSION() > 5.6)
+    <table class="{{ $class ?? 'table' }}">
+@elseif (App::VERSION() <= 5.6)
+    <table class="{{ $class or 'table' }}">
+@endif
     @if(count($columns))
 	<thead>
 		<tr>
@@ -36,7 +40,11 @@
                     {!! $c->render($r) !!}
                     @else
                     {{-- Use the "rendered_foo" field, if available, else use the plain "foo" field --}}
-                        {!! $r->{'rendered_' . $c->getField()} or $r->{$c->getField()} !!}
+                        @if (App::VERSION() > 5.6)
+                            {!! $r->{'rendered_' . $c->getField()} ?? $r->{$c->getField()} !!}
+                        @elseif (App::VERSION() <= 5.6)
+                            {!! $r->{'rendered_' . $c->getField()} or $r->{$c->getField()} !!}
+                        @endif
                     @endif
                 </td>
             @endforeach
