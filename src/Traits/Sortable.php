@@ -1,6 +1,7 @@
 <?php namespace Gbrock\Table\Traits;
 
 use Illuminate\Support\Facades\Request;
+use Illuminate\Support\Str;
 
 trait Sortable {
 
@@ -26,7 +27,7 @@ trait Sortable {
         }
 
         // The name of the custom function (which may or may not exist) which sorts this field
-        $sortFunctionName = 'sort' . studly_case($field);
+        $sortFunctionName = 'sort' . Str::studly($field);
 
         // does $field appear as a VALUE in list of known sortables?
         $isValueOfSortable = in_array($field, (array) $this->sortable);

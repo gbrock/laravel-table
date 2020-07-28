@@ -3,6 +3,7 @@
 namespace Gbrock\Table;
 
 use Illuminate\Contracts\Support\Arrayable;
+use Illuminate\Support\Arr;
 
 class BlankModel implements Arrayable {
     private $attributes;
@@ -14,7 +15,7 @@ class BlankModel implements Arrayable {
 
     public function __get($name)
     {
-        return array_get($this->attributes, $name, null);
+        return Arr::get($this->attributes, $name);
     }
 
     public function __call($name, $arguments = [])
