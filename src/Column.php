@@ -1,7 +1,6 @@
 <?php namespace Gbrock\Table;
 
 use Illuminate\Support\Facades\Request;
-use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\URL;
 
 class Column
@@ -200,7 +199,7 @@ class Column
 
     protected function getCurrentInput()
     {
-        return Input::only([
+        return Request::only([
             config('gbrock-tables.key_field')     => Request::input(config('gbrock-tables.key_field')),
             config('gbrock-tables.key_direction') => Request::input(config('gbrock-tables.key_direction')),
         ]);

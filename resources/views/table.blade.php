@@ -1,4 +1,4 @@
-<table class="{{ $class or 'table' }}">
+<table class="{{ $class ?? 'table' }}">
     @if(count($columns))
 	<thead>
 		<tr>
@@ -36,7 +36,7 @@
                     {!! $c->render($r) !!}
                     @else
                     {{-- Use the "rendered_foo" field, if available, else use the plain "foo" field --}}
-                        {!! $r->{'rendered_' . $c->getField()} or $r->{$c->getField()} !!}
+                        {!! $r->{'rendered_' . $c->getField()} ?? $r->{$c->getField()} !!}
                     @endif
                 </td>
             @endforeach

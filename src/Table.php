@@ -1,6 +1,6 @@
 <?php namespace Gbrock\Table;
 
-use Illuminate\Support\Facades\Input;
+use Illuminate\Support\Facades\Request;
 use Gbrock\Table\Column;
 
 class Table
@@ -144,6 +144,15 @@ class Table
     }
 
     /**
+     * Return the render method.
+     * @return array
+     */
+    public function __toString()
+    {
+        return $this->render();
+    }
+
+    /**
      * Generate the data needed to render the view.
      * @return array
      */
@@ -220,7 +229,7 @@ class Table
     {
         if (class_basename($this->models) == 'LengthAwarePaginator') {
             // This set of models was paginated.  Make it append our current view variables.
-            $this->models->appends(Input::only(config('gbrock-tables.key_field'),
+            $this->models->appends(Request::only(config('gbrock-tables.key_field'),
                 config('gbrock-tables.key_direction')));
         }
     }
