@@ -46,7 +46,7 @@ php artisan vendor:publish
 return view('users.index', ['table' => $table]);
 ```
 
-In your view, the table object can be rendered using its `render` function:
+In your view, the table object can be rendered using unescaped syntax:
 
 ```php
 {!! $table !!}
